@@ -8,7 +8,7 @@
   font-family: "Departure Mono";
   /* Brand-kit file is NOT copied into this repo (it lives in the official
      TaskMarket brand-kit gist); load it from the gist's public URL. */
-  src: url("https://gist.githubusercontent.com/ponderingdemocritus/05b7371bb286ab09c9f3f26bc2af9636/raw/DepartureMono-Regular.woff2") format("woff2");
+  src: url("/assets/fonts/DepartureMono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;

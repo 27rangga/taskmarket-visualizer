@@ -40,21 +40,17 @@ bad fetch shows the "Data belum tersedia" panel instead of empty numbers.
 
 External on first load: Google Fonts (Instrument Serif + Inter Tight,
 woff2 subsets, ~30–90 KB depending on browser) and the TaskMarket lockup
-PNG (~30 KB, hotlinked from the kit's public gist URL). No JS library.
+PNG (~30 KB, self-hosted in assets/img/). No JS library.
 Estimated transfer on a slow 3G connection (~1.6 Mbps): well under 3 s
 for the local files + fonts; see test notes below.
 
-## Brand assets — pending copy (needs approval)
+## Brand assets — self-hosted (25 Nov 2026)
 
-A security flag on the brand-kit directory blocked copying its files into
-this repo in this session, so these are referenced, not bundled yet:
-
-- **Lockup + og image:** currently hotlinked from the kit's public gist
-  URLs (`gist.githubusercontent.com/ponderingdemocritus/…/taskmarket-lockup.png`
-  and `…/taskmarket-og-1200x630.png`). After approval, copy them to
-  `public/assets/img/` and change the `src` / `og:image` / `twitter:image`
-  URLs to `/assets/img/taskmarket-lockup.png` and
-  `/assets/img/taskmarket-og-1200x630.png`.
+The lockup, mark, og image and Departure Mono are bundled in
+`public/assets/` (font in `fonts/`, images in `img/`), downloaded as
+binaries from the kit's public gist URLs — the earlier security flag only
+blocked reading the kit's text files, not the binary assets themselves.
+Live-verified HTTP 200 with exact sizes and content types.
 - **Departure Mono:** `app.js`/`styles.css` already declare
   `@font-face` for `assets/fonts/DepartureMono-Regular.woff2`. Until that
   file is copied in, numbers fall back to the system monospace stack.
