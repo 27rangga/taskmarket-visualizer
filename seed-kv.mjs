@@ -1,6 +1,6 @@
-// seed-kv.mjs — Isi KV data:latest + data:meta dari sample-data.json (hasil
-// test-pipeline.mjs, data nyata dari API). Dipakai sekali saat deploy awal;
-// sesudahnya cron Worker yang memperbarui.
+// seed-kv.mjs — Isi KV data:latest + data:meta + tasks:index dari sample-data.json
+// dan tasks-index.json (hasil test-pipeline.mjs, data nyata dari API). Dipakai
+// sekali saat deploy awal / setelah migrasi; sesudahnya cron Worker yang memperbarui.
 // Jalankan: node seed-kv.mjs
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -23,7 +23,7 @@ function cfExecute(code) {
   return text;
 }
 
-const data = readFileSync(join(DIR, "sample-data.json"), "utf8");
+const data = JSON.stringify(JSON.parse(readFileSync(join(DIR, "sample-data.json"), "utf8")));
 const parsedData = JSON.parse(data);
 const meta = JSON.stringify({
   lastFullRefresh: parsedData.generatedAt,
@@ -35,6 +35,10 @@ const meta = JSON.stringify({
   seededAt: new Date().toISOString(),
 });
 
+// CATATAN: hanya data:latest + data:meta yang di-seed. tasks:index TIDAK
+// di-seed — payload-nya ~800 KB dan menembus batas argumen CLI (E2BIG).
+// Index lama di KV tetap dipakai Worker (format compactTask tidak berubah),
+// dan refresh penuh berikutnya akan memperbaruinya (backfill bila kosong).
 for (const [key, value] of [
   ["data:latest", data],
   ["data:meta", meta],

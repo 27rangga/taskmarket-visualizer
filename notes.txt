@@ -30,17 +30,27 @@ Data — fetched server-side (never by the browser)
 --------------------------------------------------
 The TaskMarket API rejects browser fetches (CORS), so the Worker fetches
 everything and serves it at /api/data (Cache-Control: public, max-age=300).
+- GET https://api.taskmarket.dev/api/stats/breakdowns
+- GET https://api.taskmarket.dev/api/stats/platform-time-series
+- GET https://api.taskmarket.dev/api/stats/activity-heatmap
+- GET https://api.taskmarket.dev/api/stats/activity-feed
+  (platform-wide "all" figures; the official endpoints ignore chainId)
 - GET https://api.taskmarket.dev/api/market/stats (?chainId=4217|8453)
+  (headline figures)
 - GET https://api.taskmarket.dev/api/tasks (cursor-paged, 100/page)
+  (per-chain figures, weekly posters, top winners; only returns tasks
+  since 5 Jul 2026)
 
-Note: TaskMarket publishes no time-series / breakdown / heatmap / feed
-endpoints, so all of those are computed server-side from the task list.
-Full definitions and honest limits are in METHOD.md and on the page itself
-(e.g. "rewards paid" is dated by task creation because the API carries no
-payment date; "daily active agents" is distinct participating addresses
+Note: platform-wide figures now come from the official /api/stats/*
+endpoints (corrected 25 Nov 2026 ~05:00 WIB — the earlier note wrongly
+said those endpoints did not exist). Full definitions and honest limits
+are in METHOD.md and on the page itself (e.g. "rewards paid" for "all"
+is dated by settlement date; per-chain "rewards paid" is still dated by
+task creation; "daily active agents" is distinct participating addresses
 per day; headline "Open tasks" = open tasks whose submission window is
-still open; verified 25 Nov 2026 02:52 WIB, when the counts were 91 = 91
-against the API — the live counts move over time, see the page).
+still open; verified 25 Nov 2026 05:02 WIB, 12/13 sampled numbers exact
+vs the API, 1 small drift on the fast-moving heatmap — the live counts
+move over time, see the page).
 
 Refresh
 -------
@@ -73,10 +83,9 @@ QA (25 Nov 2026, see QA-CHECKLIST.md for evidence)
 Part 1 (all must pass): hosted live 200; server-side fetch only
 (app.js fetches only "/api/data"); hourly cron + 15-min feed cron set and
 OBSERVED ticking (feed ticks 20:15 UTC and 20:30 UTC advanced dataAsOf);
-cache max-age=300; "data as of" visible in 3 places + method note; 5
-sampled numbers match the API as of dataAsOf (fast-moving counts drift
-slightly inside the hourly refresh window, as the API itself moves; slow
-7-day counts match exactly); all minimum views present, plus "What stands
+cache max-age=300; "data as of" visible in 3 places + method note; 13
+sampled numbers checked against the API as of dataAsOf (12 exact, 1
+small drift on the fast-moving heatmap; slow counts match exactly); all minimum views present, plus "What stands
 out" (4 ratios) and "Top winners" (top 5); repo public MIT (19 files on
 main) + one-command deploy validated by `npx wrangler deploy --dry-run`
 from a fresh clone (exit 0, 14.86 KiB, bindings DATA + ASSETS — after

@@ -1,17 +1,39 @@
 // aggregate.js — logika agregasi data TaskMarket (dipakai worker.js DAN test-pipeline.mjs).
 // Satu-satunya sumber kebenaran untuk bentuk /api/data. Jangan duplikasi logika ini.
 //
-// FAKTA API (terverifikasi 25 Nov 2026 ~02:45 WIB):
-// - Hanya ada GET /api/market/stats dan GET /api/tasks. TIDAK ADA endpoint
-//   time-series / breakdown / heatmap / feed — semua dihitung di sini.
+// FAKTA API (dikoreksi 25 Nov 2026 ~04:50 WIB — klaim lama "4 endpoint tidak ada"
+// SALAH: path yang dicoba saat build awal adalah /api/market/..., padahal path
+// benar adalah /api/stats/... — keempat endpoint ADA dan HTTP 200):
+// - GET /api/market/stats — headline (mendukung ?chainId=4217|8453).
+// - GET /api/stats/breakdowns — tasks by status, mode, actor type.
+// - GET /api/stats/platform-time-series?range=all&bucket=day — deret harian
+//   (tasksCreated, rewardVolume, completedTasks, newAgents, activeAgents,
+//   paidVolume, settlements, ratings).
+// - GET /api/stats/activity-heatmap?range=all&dimension=hourOfWeek — heatmap
+//   aktivitas (cells: {row, col, count, volume}).
+// - GET /api/stats/activity-feed?limit=..&cursor=.. — event feed (maks limit 50).
+// - GET /api/tasks — daftar tugas (cursor pagination, limit 100).
+// - PENTING: breakdowns, time-series, dan heatmap MENGABAIKAN chainId —
+//   ketiganya selalu mengembalikan angka PLATFORM-WIDE (terverifikasi: respons
+//   ?chainId=4217, ?chainId=8453, dan tanpa chainId identik persis). Jadi angka
+//   scope "all" diambil dari endpoint resmi, sedangkan angka PER-CHAIN tetap
+//   dihitung dari /api/tasks (satu-satunya sumber yang memisah per chain).
+// - /api/tasks hanya mengembalikan tugas sejak 2026-07-05 (terverifikasi
+//   25 Nov 2026: walk penuh = 1.518 tugas, paling awal 2026-07-05T03:31Z,
+//   sedangkan breakdowns/time-series total 1.663/1.664 tugas; tugas pertama
+//   di API 4 Jun 2026 menurut time-series, bucket deret dimulai 26 Feb 2026).
+//   Jadi angka per-chain mencakup jendela daftar tugas (5 Jul 2026–),
+//   sedangkan angka "all" resmi mencakup semua waktu (Jun 2026–).
+// - Heatmap resmi menghitung EVENT aktivitas (task dibuat, submission,
+//   settlement, rating, ...), BUKAN tugas: total range=all 54.726 event vs
+//   1.518 tugas. Baris heatmap resmi 0=Minggu (konvensi JS getDay —
+//   dibuktikan: sel tersibuk feed 7 hari terakhir (baris 2, jam 6) sama persis
+//   dengan sel tersibuk heatmap resmi; korelasi 0,507 vs 0,170 untuk
+//   konvensi 0=Senin). Di sini dipetakan ke baris 0=Senin untuk frontend.
+// - Feed resmi: limit maksimum 50 (limit=100 -> HTTP 400).
 // - Reward dalam satuan terkecil 6 desimal: netReward "5000000" = $5,00.
 // - Tempo (4217) = OUSD, Base (8453) = USDC. Jangan dijumlah lintas mata uang
 //   tanpa catatan; angka gabungan "all" adalah penjumlahan nominal dolar.
-// - primaryAward TIDAK membawa jumlah/tanggal, jadi "rewards paid" per hari =
-//   netReward tugas berstatus completed menurut TANGGAL DIBUATNYA tugas.
-// - "Daily active agents" TIDAK ADA di API: didefinisikan sebagai distinct
-//   participants per hari dari /api/tasks (requester + primaryAward.workerAddress
-//   + claimedBy). Lihat METHOD.md.
 
 export const CHAINS = ["4217", "8453"];
 export const MODES = ["bounty", "claim", "pitch", "benchmark", "auction"];
@@ -100,16 +122,100 @@ function round2(n) {
   return Math.round(n * 100) / 100;
 }
 
+/** [{status|mode, count}] -> {status|mode: count}. */
+function breakdownMap(list) {
+  const o = {};
+  for (const e of list || []) {
+    const k = e.status || e.mode || e.actorType;
+    if (k != null) o[k] = Number(e.count) || 0;
+  }
+  return o;
+}
+
+/** Label tampil untuk tipe event activity-feed. */
+export function eventLabel(type) {
+  const map = {
+    task_created: "task created",
+    task_submitted: "submission",
+    task_completed: "completed",
+    task_settled: "settlement",
+    settlement: "settlement",
+    task_cancelled: "cancelled",
+    task_claimed: "claimed",
+    task_expired: "expired",
+    worker_selected: "worker selected",
+    rating: "rating",
+  };
+  if (map[type]) return map[type];
+  return String(type || "event").replace(/_/g, " ");
+}
+
+/**
+ * Petakan event activity-feed resmi ke bentuk feed /api/data, diperkaya dengan
+ * detail tugas dari index (bila tugasnya dikenal) supaya mode/status/reward/
+ * submissions tetap tampil. Event yang tugasnya tidak ada di index tetap
+ * tampil dengan field tugas kosong (bukan dibuang).
+ * @param {Array} events - items mentah /api/stats/activity-feed.
+ * @param {Map} taskById - id (hex) -> compactTask.
+ * @returns {Array} maksimal 20 item, terbaru dulu.
+ */
+export function buildFeedItems(events, taskById) {
+  return (events || [])
+    .slice()
+    .sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1))
+    .slice(0, 20)
+    .map((e) => {
+      const t = (taskById && taskById.get(e.taskId)) || null;
+      return {
+        referenceCode: t ? t.referenceCode : null,
+        title: e.taskTitle || (t ? t.title : "Untitled task"),
+        eventType: e.type || null,
+        event: eventLabel(e.type),
+        mode: t ? t.mode : null,
+        status: t ? t.status : null,
+        chain: String(e.chainId ?? (t ? t.chainId : "")),
+        reward: e.amount != null
+          ? toDollars(e.amount)
+          : t ? toDollars(t.netReward) : 0,
+        requesterDisplayName: t ? t.requesterDisplayName : null,
+        createdAt: e.timestamp,
+        submissionCount: t ? t.submissionCount : 0,
+        awardCount: t ? t.awardCount : 0,
+      };
+    });
+}
+
+/** Tugas completed terbaru (untuk panel flow) dari daftar tugas. */
+export function latestCompletedItem(tasks) {
+  let best = null;
+  for (const t of tasks || []) {
+    if (t.status !== "completed") continue;
+    if (!best || t.createdAt > best.createdAt) best = t;
+  }
+  if (!best) return null;
+  return {
+    referenceCode: best.referenceCode,
+    title: best.title,
+    reward: toDollars(best.netReward),
+    requesterDisplayName: best.requesterDisplayName,
+    createdAt: best.createdAt,
+  };
+}
+
 /**
  * Agregasi penuh.
  * @param {Array} tasks - task ringkas (compactTask), urutan apa pun.
  * @param {Object} statsAll - respons /api/market/stats tanpa chainId.
  * @param {Object} statsByChain - {"4217": {...}, "8453": {...}}.
+ * @param {Object} official - {breakdowns, timeSeries, heatmap, feed} dari
+ *   endpoint /api/stats/... (boleh null/parsial — bagian yang hilang memakai
+ *   fallback hitungan dari /api/tasks, seperti sebelum migrasi).
  * @param {string} [asOfIso] - dataAsOf; default now.
  * @returns {Object} JSON persis kontrak /api/data (lihat DATA-CONTRACT.md).
  */
-export function aggregate(tasks, statsAll, statsByChain, asOfIso) {
+export function aggregate(tasks, statsAll, statsByChain, official, asOfIso) {
   const now = asOfIso || new Date().toISOString();
+  const off = official || {};
   const chainStats = {};
   for (const c of CHAINS) {
     const s = statsByChain[c] || {};
@@ -134,8 +240,11 @@ export function aggregate(tasks, statsAll, statsByChain, asOfIso) {
     activeWallets: CHAINS.reduce((a, c) => a + chainStats[c].activeWallets, 0),
   };
 
-  // ---- akumulator ----
-  const dailyMap = new Map(); // key `${date}|${chain}` -> row + Set peserta/poster
+  // ---- akumulator dari /api/tasks (PER-CHAIN + poster/winner) ----
+  // Per-chain dihitung dari daftar tugas karena endpoint resmi mengabaikan
+  // chainId (selalu platform-wide). Jendela daftar tugas: 5 Jul 2026–.
+  const dailyMap = new Map(); // key `${date}|${chain}` -> row (hanya per-chain)
+  const walkAllDaily = new Map(); // key date -> {submissions, posters:Set} (utk baris "all")
   const byMode = { "4217": emptyModeCounts(), "8453": emptyModeCounts(), all: emptyModeCounts() };
   const byStatus = { "4217": {}, "8453": {}, all: {} };
   const heatmap = {
@@ -174,32 +283,31 @@ export function aggregate(tasks, statsAll, statsByChain, asOfIso) {
     const putUp = toDollars(t.netReward);
     const paid = t.status === "completed" ? putUp : 0;
 
-    for (const scope of [chain, "all"]) {
-      const row = dailyRow(date, scope);
-      row.tasksPosted += 1;
-      row.rewardsPutUp = round2(row.rewardsPutUp + putUp);
-      row.rewardsPaid = round2(row.rewardsPaid + paid);
-      row.submissions += t.submissionCount;
-      if (t.requester) { row._agents.add(t.requester); row._posters.add(t.requester); }
-      if (t.winner) row._agents.add(t.winner);
-      if (t.claimedBy) row._agents.add(t.claimedBy);
-    }
+    // Deret harian PER-CHAIN dari daftar tugas (jendela 5 Jul 2026–).
+    const row = dailyRow(date, chain);
+    row.tasksPosted += 1;
+    row.rewardsPutUp = round2(row.rewardsPutUp + putUp);
+    row.rewardsPaid = round2(row.rewardsPaid + paid);
+    row.submissions += t.submissionCount;
+    if (t.requester) { row._agents.add(t.requester); row._posters.add(t.requester); }
+    if (t.winner) row._agents.add(t.winner);
+    if (t.claimedBy) row._agents.add(t.claimedBy);
+    // Submissions/posters gabungan per tanggal (untuk baris "all" resmi).
+    let wad = walkAllDaily.get(date);
+    if (!wad) { wad = { submissions: 0, posters: new Set() }; walkAllDaily.set(date, wad); }
+    wad.submissions += t.submissionCount;
+    if (t.requester) wad.posters.add(t.requester);
 
-    // byMode (mode tak dikenal tetap dicatat, bukan dibuang)
-    for (const scope of [chain, "all"]) {
-      if (!(t.mode in byMode[scope])) byMode[scope][t.mode] = 0;
-      byMode[scope][t.mode] += 1;
-    }
-    // byStatus
-    for (const scope of [chain, "all"]) {
-      byStatus[scope][t.status] = (byStatus[scope][t.status] || 0) + 1;
-    }
+    // byMode / byStatus PER-CHAIN dari daftar tugas.
+    if (!(t.mode in byMode[chain])) byMode[chain][t.mode] = 0;
+    byMode[chain][t.mode] += 1;
+    byStatus[chain][t.status] = (byStatus[chain][t.status] || 0) + 1;
 
-    // heatmap: baris 0 = Senin, kolom = jam UTC
+    // heatmap PER-CHAIN: tugas dibuat per jam UTC (endpoint resmi tidak
+    // memisah per chain; baris 0 = Senin di sini, sama seperti frontend).
     const wd = weekdayOf(t.createdAt);
     const hr = hourOf(t.createdAt);
     heatmap[chain][wd][hr] += 1;
-    heatmap.all[wd][hr] += 1;
 
     // posters mingguan
     if (t.requester) {
@@ -223,17 +331,63 @@ export function aggregate(tasks, statsAll, statsByChain, asOfIso) {
       winners.set(t.winner, w);
     }
 
-    // totals
+    // totals per-chain (jendela daftar tugas)
     const tc = totalsByChain[chain];
     tc.tasksTotal += 1;
     tc.rewardsPutUpTotal = round2(tc.rewardsPutUpTotal + putUp);
     tc.rewardsPaidTotal = round2(tc.rewardsPaidTotal + paid);
   }
 
-  // ---- daily: urut tanggal naik, "all" + per chain ----
-  const daily = [...dailyMap.values()]
-    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.chain.localeCompare(b.chain)))
-    .map((r) => ({
+  // ---- angka "all" RESMI (endpoint /api/stats/...) ----
+  let totals = {
+    tasksTotal: tasks.length,
+    rewardsPutUpTotal: round2(CHAINS.reduce((a, c) => a + totalsByChain[c].rewardsPutUpTotal, 0)),
+    rewardsPaidTotal: round2(CHAINS.reduce((a, c) => a + totalsByChain[c].rewardsPaidTotal, 0)),
+  };
+
+  // byMode / byStatus "all" dari breakdowns resmi.
+  if (off.breakdowns) {
+    const bm = breakdownMap(off.breakdowns.mode);
+    const bs = breakdownMap(off.breakdowns.status);
+    byMode.all = { ...emptyModeCounts(), ...bm };
+    byStatus.all = bs;
+    totals.tasksTotal = Object.values(bs).reduce((a, b) => a + b, 0);
+  } else {
+    // Fallback (endpoint gagal): jumlah per-chain dari daftar tugas.
+    for (const c of CHAINS) {
+      for (const [k, v] of Object.entries(byMode[c])) byMode.all[k] = (byMode.all[k] || 0) + v;
+      for (const [k, v] of Object.entries(byStatus[c])) byStatus.all[k] = (byStatus.all[k] || 0) + v;
+    }
+  }
+
+  // Deret harian "all" dari platform-time-series resmi.
+  const daily = [];
+  if (Array.isArray(off.timeSeries) && off.timeSeries.length) {
+    // Total dijumlah dari satuan terkecil dulu, baru dikonversi SEKALI —
+    // pembulatan per hari lalu dijumlah bisa meleset beberapa sen.
+    let putUpMinor = 0;
+    let paidMinor = 0;
+    for (const r of off.timeSeries) {
+      const wad = walkAllDaily.get(r.bucket);
+      daily.push({
+        date: r.bucket,
+        chain: "all",
+        tasksPosted: Number(r.tasksCreated) || 0,
+        rewardsPutUp: toDollars(r.rewardVolume),
+        rewardsPaid: toDollars(r.paidVolume),
+        submissions: wad ? wad.submissions : 0,
+        activeAgents: Number(r.activeAgents) || 0,
+        posters: wad ? wad.posters.size : 0,
+      });
+      putUpMinor += Number(r.rewardVolume) || 0;
+      paidMinor += Number(r.paidVolume) || 0;
+    }
+    totals.rewardsPutUpTotal = toDollars(putUpMinor);
+    totals.rewardsPaidTotal = toDollars(paidMinor);
+  }
+  // Baris per-chain dari daftar tugas (diurut tanggal naik).
+  for (const r of [...dailyMap.values()].sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.chain.localeCompare(b.chain)))) {
+    daily.push({
       date: r.date,
       chain: r.chain,
       tasksPosted: r.tasksPosted,
@@ -242,7 +396,44 @@ export function aggregate(tasks, statsAll, statsByChain, asOfIso) {
       submissions: r.submissions,
       activeAgents: r._agents.size,
       posters: r._posters.size,
-    }));
+    });
+  }
+  daily.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.chain.localeCompare(b.chain)));
+  if (!Array.isArray(off.timeSeries) || !off.timeSeries.length) {
+    // Fallback tanpa time-series: baris "all" = jumlah per-chain dari daftar tugas.
+    const allRows = new Map();
+    for (const r of [...dailyMap.values()]) {
+      let ar = allRows.get(r.date);
+      if (!ar) { ar = { ...emptyDailyRow(r.date, "all"), _agents: new Set(), _posters: new Set() }; allRows.set(r.date, ar); }
+      ar.tasksPosted += r.tasksPosted;
+      ar.rewardsPutUp = round2(ar.rewardsPutUp + r.rewardsPutUp);
+      ar.rewardsPaid = round2(ar.rewardsPaid + r.rewardsPaid);
+      ar.submissions += r.submissions;
+      for (const a of r._agents) ar._agents.add(a);
+      for (const p of r._posters) ar._posters.add(p);
+    }
+    for (const r of [...allRows.values()].sort((a, b) => (a.date < b.date ? -1 : 1))) {
+      daily.push({ date: r.date, chain: "all", tasksPosted: r.tasksPosted, rewardsPutUp: round2(r.rewardsPutUp), rewardsPaid: round2(r.rewardsPaid), submissions: r.submissions, activeAgents: r._agents.size, posters: r._posters.size });
+    }
+    daily.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.chain.localeCompare(b.chain)));
+  }
+
+  // Heatmap "all" resmi: event aktivitas; baris resmi 0=Minggu (getDay) ->
+  // frontend 0=Senin: barisBaru[(r + 6) % 7] = barisResmi[r].
+  if (off.heatmap && Array.isArray(off.heatmap.cells)) {
+    const hmAll = Array.from({ length: 7 }, () => Array(24).fill(0));
+    for (const c of off.heatmap.cells) {
+      const r = Number(c.row);
+      const col = Number(c.col);
+      if (r >= 0 && r < 7 && col >= 0 && col < 24) hmAll[(r + 6) % 7][col] += Number(c.count) || 0;
+    }
+    heatmap.all = hmAll;
+  } else {
+    // Fallback: jumlah per-chain dari daftar tugas.
+    for (let d = 0; d < 7; d++) {
+      for (let h = 0; h < 24; h++) heatmap.all[d][h] = heatmap["4217"][d][h] + heatmap["8453"][d][h];
+    }
+  }
 
   // ---- postersWeekly: 8 minggu terakhir (minggu Senin), per chain + all ----
   const allWeekStarts = [...new Set([...weeklyMap.values()].map((b) => b.weekStart))].sort();
@@ -265,39 +456,47 @@ export function aggregate(tasks, statsAll, statsByChain, asOfIso) {
     }
   }
 
-  // ---- feed: 20 terbaru ----
-  const feed = [...tasks]
-    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
-    .slice(0, 20)
-    .map((t) => ({
-      referenceCode: t.referenceCode,
-      title: t.title,
-      mode: t.mode,
-      status: t.status,
-      chain: t.chainId,
-      reward: toDollars(t.netReward),
-      requesterDisplayName: t.requesterDisplayName,
-      createdAt: t.createdAt,
-      submissionCount: t.submissionCount,
-      awardCount: t.awardCount,
-    }));
+  // ---- feed: event resmi diperkaya dari daftar tugas ----
+  const taskById = new Map(tasks.map((t) => [t.id, t]));
+  let feed = null;
+  if (off.feed && Array.isArray(off.feed.items)) {
+    feed = buildFeedItems(off.feed.items, taskById);
+  }
+  if (!feed) {
+    // Fallback: 20 tugas terbaru dari daftar tugas.
+    feed = [...tasks]
+      .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+      .slice(0, 20)
+      .map((t) => ({
+        referenceCode: t.referenceCode,
+        title: t.title,
+        eventType: "task_created",
+        event: "task created",
+        mode: t.mode,
+        status: t.status,
+        chain: t.chainId,
+        reward: toDollars(t.netReward),
+        requesterDisplayName: t.requesterDisplayName,
+        createdAt: t.createdAt,
+        submissionCount: t.submissionCount,
+        awardCount: t.awardCount,
+      }));
+  }
 
   const topWinners = [...winners.values()]
     .sort((a, b) => b.wins - a.wins || b.totalWon - a.totalWon)
     .slice(0, 10);
-
-  const totals = {
-    tasksTotal: tasks.length,
-    rewardsPutUpTotal: round2(CHAINS.reduce((a, c) => a + totalsByChain[c].rewardsPutUpTotal, 0)),
-    rewardsPaidTotal: round2(CHAINS.reduce((a, c) => a + totalsByChain[c].rewardsPaidTotal, 0)),
-  };
 
   return {
     dataAsOf: now,
     generatedAt: now,
     sources: {
       stats: "GET /api/market/stats?chainId=<id>",
-      tasks: "GET /api/tasks (cursor-paged)",
+      breakdowns: "GET /api/stats/breakdowns (platform-wide)",
+      timeSeries: "GET /api/stats/platform-time-series?range=all&bucket=day (platform-wide)",
+      heatmap: "GET /api/stats/activity-heatmap?range=all&dimension=hourOfWeek (platform-wide)",
+      feed: "GET /api/stats/activity-feed?limit=20",
+      tasks: "GET /api/tasks (cursor-paged; per-chain + posters + winners)",
     },
     chains: chainStats,
     headline,
@@ -306,6 +505,7 @@ export function aggregate(tasks, statsAll, statsByChain, asOfIso) {
     byStatus,
     heatmap,
     feed,
+    latestCompleted: latestCompletedItem(tasks),
     postersWeekly,
     topWinners,
     totals,

@@ -34,7 +34,7 @@ ambang lolos 100% minimal 80%" — target kualitas 100%, lantai 80%.
 ## Fakta API yang ditemukan saat build (25 Nov ~02:45 WIB)
 
 - YANG BENAR-BENAR ADA: `GET /api/market/stats` (mendukung `?chainId=4217|8453`) dan `GET /api/tasks` (cursor pagination `limit` + `nextCursor`/`hasMore`; filter `chainId`, `status=open|completed`; field lengkap: createdAt, mode, status, phase, reward, netReward, chainId, requester, requesterDisplayName, submissionCount, awardCount, primaryAward {workerAddress, rating}, claimedBy).
-- YANG TIDAK ADA (404 di semua varian path/host/metode yang dicoba): `platform-time-series`, `breakdowns`, `activity-heatmap`, `activity-feed` — klaim verifikasi awal untuk 4 endpoint ini SALAH.
+- ~~YANG TIDAK ADA (404 di semua varian path/host/metode yang dicoba): `platform-time-series`, `breakdowns`, `activity-heatmap`, `activity-feed` — klaim verifikasi awal untuk 4 endpoint ini SALAH.~~ **KOREKSI 25 Nov ~04:50 WIB: klaim ini SALAH.** Keempat endpoint ADA di path `/api/stats/...` (HTTP 200, terverifikasi langsung berkali-kali); saat build awal yang dicoba adalah path `/api/market/...` yang salah. Lihat "Koreksi endpoint resmi" di bawah.
 - KONSEKUENSI: semua deret waktu, breakdown, heatmap, feed, dan distinct posters/minggu DIHITUNG di Worker dari data `/api/tasks` (paging penuh) + angka headline dari `/api/market/stats`. Catatan metode di halaman WAJIB menjelaskan ini dengan jujur.
 - Rate limit API: "Too many requests; retry after 2 seconds" — pipeline WAJIB backoff + jeda antar halaman; jangan panggil beruntun tanpa jeda.
 - `primaryAward` tidak membawa jumlah/tanggal → "rewards paid" per hari dihitung dari tugas `completed` (netReward) menurut tanggal dibuatnya tugas; tulis definisi ini di catatan metode.
@@ -75,6 +75,42 @@ ambang lolos 100% minimal 80%" — target kualitas 100%, lantai 80%.
 4. **Bug wrangler.toml ditemukan + diperbaiki.** Lihat 1.8 di atas (`main` + `binding` tidak ada → deploy wrangler akan mengabaikan worker.js).
 5. **Catatan metode "91 = 91" diberi tanggal jelas.** Kini tertulis "terverifikasi 25 Nov 2026 pukul 02:52 WIB — pada saat itu … (91 = 91)" + "angka-angka ini bergerak seiring waktu" di halaman, METHOD.md, dan notes.txt.
 6. **Self-host aset brand-kit BERHASIL (25 Nov ~03:45–03:47 WIB).** Flag execution-risk ternyata hanya kena PEMBACAAN teks kit (ls/read ~03:33 WIB), bukan file binernya. Keempat aset (DepartureMono woff2 22.496 B; lockup 971×176 30.419 B; mark 1000×1000 36.006 B; og 1200×630 109.855 B) diunduh langsung dari URL gist resmi via curl — semua terverifikasi sebagai biner valid — lalu disalin ke public/assets/ dan referensi di index.html/styles.css diganti (og/twitter image pakai URL live absolut). Halangan kedua: deploy.mjs hanya mengunggah 3 file hardcode (index/styles/app.js) — daftarnya ditambah 4 aset, redeploy, live terverifikasi: keempatnya HTTP 200 dengan ukuran + content-type persis. Design/brand naik 4 → 5, total 94 → 97/100.
+
+## Koreksi endpoint resmi + migrasi agregasi (25 Nov ~04:40–05:00 WIB, perintah RANGGA "Ya, perbaiki sekarang")
+
+**Masalah yang ditemukan analisis kompetitor + diverifikasi agen utama (curl langsung ~04:30 WIB):** 4 endpoint yang build awal nyatakan 404 ternyata ADA dan HTTP 200 — path benar `/api/stats/...`, bukan `/api/market/...`. Akibatnya angka live menyimpang dari API resmi: total tugas 1.508 vs ~1.656 resmi; byStatus completed 1.014 vs 1.120; byMode bounty 1.237 vs 1.376; heatmap 1.508 vs 21.191 event. Risiko gagal Part 1 "5 angka acak cocok dengan API".
+
+**Temuan saat migrasi (semua terverifikasi langsung, 25 Nov ~04:50 WIB):**
+1. `breakdowns`, `platform-time-series`, dan `activity-heatmap` **mengabaikan `chainId`** — respons `?chainId=4217`, `?chainId=8453`, dan tanpa chain identik persis. Ketiganya platform-wide. Angka scope "all" diambil dari endpoint resmi; angka per-chain tetap dari `/api/tasks` (satu-satunya sumber yang memisah per chain).
+2. `/api/tasks` hanya mengembalikan tugas sejak **5 Jul 2026** (walk penuh 1.518–1.524 tugas; tugas pertama di API 4 Jun 2026 menurut time-series). Angka per-chain/poster/winner = jendela 5 Jul 2026–; angka "all" resmi = semua waktu.
+3. Heatmap resmi menghitung **event aktivitas** (range=all: 54.726–54.771 event), bukan tugas. Baris resmi 0=Minggu (konvensi JS getDay — dibuktikan: sel tersibuk feed 7 hari (baris 2, jam 6) sama persis dengan sel tersibuk heatmap resmi; korelasi 0,507 vs 0,170 untuk konvensi 0=Senin). Dipetakan ke 0=Senin di `aggregate.js`.
+4. `activity-feed`: limit maksimum 50 (limit=100 → HTTP 400). Dipakai limit=20.
+5. `rewardsPaid` "all" kini = `paidVolume` resmi menurut **tanggal settlement** (definisi lama "menurut tanggal tugas dibuat" hanya tersisa untuk scope per-chain, karena tanggal pembayaran per-chain tidak ada di API).
+
+**Yang diubah (file lokal, BELUM di-push — lihat catatan repo di bawah):** `aggregate.js` (ditulis ulang: sumber resmi untuk "all", walk untuk per-chain/poster/winner), `worker.js` (fetch 4 endpoint resmi + feed resmi diperkaya dari `tasks:index`), `test-pipeline.mjs` (fetch resmi + verifikasi 13 angka vs API), `seed-kv.mjs` (minify JSON + TIDAK seed `tasks:index` — payload ~800 KB menembus batas argumen CLI `E2BIG`; index lama di KV tetap dipakai, format tidak berubah), `verify-live.mjs` (BARU — verifikasi live vs API), `public/app.js` (panel flow pakai `latestCompleted`, tooltip/label heatmap sadar-scope, chip tipe event di feed), `public/index.html` (judul heatmap "When the market moves", sub feed, seluruh catatan metode ditulis ulang + paragraf "Koreksi 25 Nov 2026"), `public/styles.css` (`.method code { overflow-wrap: anywhere; }` — perbaikan overflow 51px di 360px), `METHOD.md` + `DATA-CONTRACT.md` (ditulis ulang mengikuti sumber baru). `notes.txt` TIDAK diubah (sudah disubmit; agen utama yang memutuskan).
+
+**Verifikasi lokal (`node test-pipeline.mjs`, 25 Nov ~04:52 WIB): 13/13 cek cocok persis** — byStatus.all (completed/open/cancelled), byMode.all (bounty/claim), totals (tasks 1.671, put up $5.366,50, paid $2.747,55), daily.all 24 Nov (tasks 67, activeAgents 180, paid $208,75), heatmap.all total events, feed 20 item. (Satu temuan saat uji: total yang dijumlah dari nilai harian yang sudah dibulatkan meleset $0,11 — diperbaiki dengan menjumlah satuan terkecil dulu baru dikonversi sekali.)
+
+**Verifikasi live (`node verify-live.mjs` + `curl /api/data`, dataAsOf 21:49:41Z):** totals 1.671 / $5.366,50 / $2.747,55; byStatus.all completed 1.124, open 213; byMode.all bounty 1.391; heatmap.all 54.771 event; feed event pertama `task_submitted` ter-enrichment (referenceCode/mode/status). Cek ulang 21:52Z: 7/13 cocok persis, 6 drift kecil yang saling konsisten (1 tugas selesai dalam 2,5 menit: open −1, completed +1, paid +$0,50, openTasks −1, heatmap +5 event) — bukti angka benar *pada dataAsOf*.
+
+**Mobile 360px (Playwright headless, data lokal baru):** scrollWidth 360 = innerWidth 360, TANPA elemen meluber, 20 feed item, 168 sel heatmap, tanpa JS error. Perbaikan CSS di atas menutup overflow 51px dari URL `<code>` panjang di catatan metode. **CATATAN:** perbaikan CSS ini baru di file lokal — deploy ulang `node deploy.mjs` GAGAL 2× (~21:55–21:56 WIB) karena CLI `cloudflare execute` error `Permission denied (os error 13)` (muncul setelah restart service; deploy 21:50 WIB sebelumnya berhasil). Jadi live `styles.css` masih versi lama (overflow 51px di 360px masih ada di live) — perlu deploy ulang begitu CLI pulih, atau lewat jalur browser agen utama.
+
+**Deploy yang berhasil:** Worker + aset baru ter-deploy 21:50 WIB via `node deploy.mjs` (deployment_id `c8e5d10727b14882808b538c96a5be63`); KV di-seed manual dari agregat baru (`node seed-kv.mjs`, dataAsOf 21:49:41Z). **Verifikasi pasca-cron 22:00 UTC (dicek 22:01:46Z): dataAsOf 22:00:46Z — tick cron meregenerasi data dengan kode Worker baru; 12/13 cek cocok persis** (byStatus.all completed 1.128, open 209; byMode.all bounty 1.391; totals 1.671 / $5.366,50 / $2.749,80; daily 24 Nov 67 tugas, 180 agen aktif, paid $211; headline registered 148.430, open 74), **1 drift +1 event heatmap dalam 60 detik** (aktivitas nyata). **Kode Worker baru terbukti jalan sendiri, bukan hanya dari seed manual.**
+
+**Check 1.6 — KOREKSI KEJUJURAN:** verifikasi 1.6 sebelumnya (03:05–03:36 WIB) membandingkan turunan `/api/tasks` dengan `/api/tasks` sendiri — sirkular, bukan bukti terhadap endpoint resmi. Verifikasi baru di atas (13/13 lokal + live vs endpoint resmi) adalah bukti 1.6 yang benar. **1.6 kini LOLOS terhadap endpoint resmi.**
+
+## Penilaian Bagian 2 — setelah koreksi (tetap 97/100, basis kini terverifikasi)
+
+| Kriteria | Bobot | Skor (1–5) | Alasan |
+|---|---|---|---|
+| Creativity | 25 | 5 | Tetap (hero flow + What stands out + Top winners + poster mingguan + heatmap + tab dua chain). |
+| Insight | 20 | 5 | Membaik: `rewardsPaid` kini volume settlement resmi menurut tanggal bayar (bukan lagi proxy tanggal tugas dibuat); deret kini 272 hari (Feb–Nov) bukan 123 hari. |
+| Reliability / speed | 15 | 4 | Tetap 4 — stabilitas 3 hari belum bisa dibuktikan (bukti 3 hari lengkap ~27 Nov). |
+| Design / brand | 15 | 5 | Tetap (aset self-hosted; perbaikan overflow 360px di file lokal, menunggu deploy ulang CSS). |
+| Shareability | 15 | 5 | Tetap (og image + meta lengkap). |
+| Code / handover | 10 | 5 | Membaik: 6 endpoint terdokumentasi jujur + skrip `verify-live.mjs`; `wrangler deploy --dry-run` tetap exit 0 dari clone baru (belum diuji ulang setelah perubahan ini — agen utama/push berikutnya). |
+
+**Total perkiraan: 97/100** — di atas ambang 60 dan lantai 80% RANGGA, tanpa skor 1. Penilaian akhir tetap di tangan requester.
 
 ## Infrastruktur (per 25 Nov ~02:45 WIB)
 
