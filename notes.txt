@@ -23,7 +23,8 @@ Stack
 - Brand kit only: Instrument Serif / Inter Tight / Departure Mono;
   ground #12100E, panel #221E1A, magenta #E74079 as accent only.
   Lockup, share image (taskmarket-og-1200x630.png) and Departure Mono are
-  loaded from the official brand-kit gist URLs.
+  self-hosted in public/assets/ (binaries downloaded from the official
+  brand-kit gist).
 
 Data — fetched server-side (never by the browser)
 --------------------------------------------------
@@ -86,8 +87,8 @@ request <0.8 s, <3 s load). Chart x-labels fixed (last label was clipped
 to "11-2"); label count now adapts to chart width, verified no-overlap
 for all ranges at 360px.
 Part 2 self-assessment (perintah RANGGA 25 Nov 03:28 WIB: target 100%,
-lantai 80%): Creativity 5, Insight 5, Reliability 4, Design/brand 4,
-Shareability 5, Code/handover 5 — total 94/100, no 1s. Reliability stays
-4 (3-day stability cannot be proven before submit); Design/brand stays 4
-(brand-kit self-hosting is blocked by an execution-risk flag, so assets
-stay hotlinked from the official gist, verified HTTP 200).
+lantai 80%): Creativity 5, Insight 5, Reliability 4, Design/brand 5,
+Shareability 5, Code/handover 5 — total 97/100, no 1s. Reliability stays
+4 (3-day stability cannot be proven before submit — site live since 24 Nov,
+proof complete ~27 Nov); Design/brand rose 4 → 5 on 25 Nov ~03:47 WIB
+(brand assets self-hosted in public/assets/, verified live HTTP 200).

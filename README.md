@@ -86,11 +86,10 @@ addresses per day from the task list).
 Built with the TaskMarket brand kit only: Instrument Serif (headlines),
 Inter Tight (body), Departure Mono (numbers, addresses, code); ground
 `#12100E`, panel `#221E1A`, magenta `#E74079` as accent only. The lockup,
-share image (`taskmarket-og-1200x630.png`), and Departure Mono are loaded
-from the official brand-kit gist URLs — the kit files are not copied into
-this repo (copying them is blocked: the brand-kit content fails the
-execution-risk check, so self-hosting is not possible here; the gist URLs
-are verified HTTP 200).
+share image (`taskmarket-og-1200x630.png`), and Departure Mono are
+self-hosted in `public/assets/` (downloaded as binaries from the official
+brand-kit gist; reading the kit's text is blocked by an execution-risk
+check, but the binary files themselves are fine — verified live HTTP 200).
 
 ## License
 

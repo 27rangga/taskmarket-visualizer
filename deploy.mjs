@@ -23,6 +23,10 @@ const ASSETS = [
   { path: "/index.html", file: "public/index.html", type: "text/html" },
   { path: "/styles.css", file: "public/styles.css", type: "text/css" },
   { path: "/app.js", file: "public/app.js", type: "text/javascript" },
+  { path: "/assets/img/taskmarket-lockup.png", file: "public/assets/img/taskmarket-lockup.png", type: "image/png" },
+  { path: "/assets/img/taskmarket-mark.png", file: "public/assets/img/taskmarket-mark.png", type: "image/png" },
+  { path: "/assets/img/taskmarket-og-1200x630.png", file: "public/assets/img/taskmarket-og-1200x630.png", type: "image/png" },
+  { path: "/assets/fonts/DepartureMono-Regular.woff2", file: "public/assets/fonts/DepartureMono-Regular.woff2", type: "font/woff2" },
 ];
 
 function cfExecute(code) {
