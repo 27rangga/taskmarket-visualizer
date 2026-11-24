@@ -145,7 +145,9 @@
     $("flow-winner-addr").textContent = w ? shortAddr(w.workerAddress) : "—";
     $("flow-winner-wins").textContent = w ? fmtInt(w.wins) + (w.wins === 1 ? " win" : " wins") : "—";
     $("flow-winner-won").textContent = w ? fmtMoney(w.totalWon) + " won in total" : "—";
-    var done = (data.feed || []).find(function (f) { return f.status === "completed"; });
+    // Tugas completed terbaru: dari data.latestCompleted (daftar tugas); kalau
+    // belum ada, cari di feed (item feed membawa status tugasnya).
+    var done = data.latestCompleted || (data.feed || []).find(function (f) { return f.status === "completed"; });
     $("flow-latest").innerHTML = done
       ? "Latest completed task: <span class=\"mono\">" + esc(done.referenceCode || "") + "</span> — " +
         esc(done.title || "Untitled task") + " · " + fmtMoney(done.reward) +
@@ -255,6 +257,16 @@
     var scope = chainScope();
     var hm = (data.heatmap && data.heatmap[scope]) || null;
     var grid = $("heatmap-grid");
+    // Satuan heatmap berbeda per scope (lihat catatan metode): "all" = event
+    // aktivitas dari endpoint resmi (tanpa split per chain); per-chain =
+    // tugas dibuat, dari daftar tugas.
+    var unit = scope === "all" ? "events" : "tasks";
+    var sub = document.querySelector("#heatmap .section-sub");
+    if (sub) {
+      sub.textContent = scope === "all"
+        ? "Activity events per hour, UTC. Rows run Monday to Sunday."
+        : "Tasks created per hour, UTC. Rows run Monday to Sunday.";
+    }
     if (!hm) { grid.innerHTML = '<p class="bar-empty">No data.</p>'; return; }
     var max = 0;
     hm.forEach(function (row) { row.forEach(function (v) { if (v > max) max = v; }); });
@@ -273,7 +285,7 @@
         var alpha = v > 0 && max > 0 ? 0.08 + 0.82 * (v / max) : 0;
         var isPeak = d === peak.d && hr === peak.h;
         html.push('<div class="hm-cell' + (isPeak ? " peak" : "") + '" style="background:rgba(239,233,226,' + alpha.toFixed(2) + ')"' +
-          ' title="' + DAYS[d] + " " + String(hr).padStart(2, "0") + ':00 UTC — ' + fmtInt(v) + ' tasks"></div>');
+          ' title="' + DAYS[d] + " " + String(hr).padStart(2, "0") + ":00 UTC — " + fmtInt(v) + " " + unit + '"></div>');
       });
     });
     grid.innerHTML = html.join("");
@@ -291,6 +303,7 @@
         '<span class="feed-time">' + esc(timeAgo(f.createdAt, data.dataAsOf)) + "</span></div>" +
         '<p class="feed-title">' + esc(f.title || "Untitled task") + "</p>" +
         '<div class="feed-meta">' +
+        (f.event ? '<span class="chip">' + esc(f.event) + "</span>" : "") +
         '<span class="chip">' + esc(f.mode || "—") + "</span>" +
         '<span class="chip status-' + esc(f.status || "") + '">' + esc(f.status || "—") + "</span>" +
         '<span class="chip chain-' + esc(chain) + '">' + esc(chainLabel) + "</span>" +
