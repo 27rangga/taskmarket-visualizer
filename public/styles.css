@@ -333,7 +333,7 @@ code, .mono { font-family: var(--mono); font-size: .86em; }
 /* ---------- method ---------- */
 .method p { font-size: 14px; }
 .method p strong { font-weight: 600; color: var(--paper); }
-.method code { color: var(--paper); }
+.method code { color: var(--paper); overflow-wrap: anywhere; }
 .method ul, .method ol { padding-left: 20px; margin: 0 0 14px; }
 .method li { font-size: 14px; margin-bottom: 6px; }
 .method li strong { font-weight: 600; color: var(--paper); }

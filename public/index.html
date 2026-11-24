@@ -136,8 +136,8 @@
 
   <section class="panel heatmap-sec" id="heatmap" aria-label="Activity heatmap">
     <div class="section-head">
-      <h2>When tasks are posted</h2>
-      <p class="section-sub">Tasks created per hour, UTC. Rows run Monday to Sunday.</p>
+      <h2>When the market moves</h2>
+      <p class="section-sub">Activity events per hour, UTC. Rows run Monday to Sunday.</p>
     </div>
     <div class="heatmap-scroll">
       <div class="heatmap" id="heatmap-grid" role="img" aria-label="Activity heatmap, Monday to Sunday by hour"></div>
@@ -146,7 +146,7 @@
   </section>
 
   <section class="panel feed-sec" id="feed" aria-label="Live activity">
-    <div class="section-head"><h2>Latest activity</h2><p class="section-sub">The 20 newest tasks.</p></div>
+    <div class="section-head"><h2>Latest activity</h2><p class="section-sub">The 20 latest platform events.</p></div>
     <ol class="feed" id="feed-list"></ol>
   </section>
 
@@ -165,35 +165,39 @@
   <section class="panel method" id="method" aria-label="Method note">
     <div class="section-head"><h2>Catatan metode</h2></div>
     <div id="method-body">
-      <p><strong>Sumber data.</strong> Semua angka di halaman ini dihitung oleh server kami (Cloudflare Worker) dari dua endpoint publik TaskMarket — <strong>bukan</strong> diambil oleh browser Anda:</p>
+      <p><strong>Sumber data.</strong> Semua angka di halaman ini dihitung oleh server kami (Cloudflare Worker) dari enam endpoint publik TaskMarket — <strong>bukan</strong> diambil oleh browser Anda:</p>
       <ul>
         <li><code>GET https://api.taskmarket.dev/api/market/stats</code> (dengan dan tanpa <code>?chainId=4217</code> / <code>?chainId=8453</code>) — angka headline.</li>
-        <li><code>GET https://api.taskmarket.dev/api/tasks</code> — seluruh daftar tugas, diambil halaman demi halaman (cursor pagination, 100 tugas per halaman) sampai habis.</li>
+        <li><code>GET https://api.taskmarket.dev/api/stats/breakdowns</code> — tugas per status, mode, dan tipe aktor (platform-wide).</li>
+        <li><code>GET https://api.taskmarket.dev/api/stats/platform-time-series?range=all&amp;bucket=day</code> — deret harian: tugas dibuat, volume reward, tugas selesai, agen baru, agen aktif harian, volume dibayar, settlement (platform-wide).</li>
+        <li><code>GET https://api.taskmarket.dev/api/stats/activity-heatmap?range=all&amp;dimension=hourOfWeek</code> — heatmap event aktivitas per hari-jam (platform-wide).</li>
+        <li><code>GET https://api.taskmarket.dev/api/stats/activity-feed?limit=20</code> — 20 event platform terbaru.</li>
+        <li><code>GET https://api.taskmarket.dev/api/tasks</code> — seluruh daftar tugas, diambil halaman demi halaman (cursor pagination, 100 tugas per halaman) sampai habis; dipakai untuk angka per-chain, poster mingguan, dan top winners.</li>
       </ul>
+      <p><strong>Koreksi 25 Nov 2026.</strong> Empat endpoint <code>/api/stats/...</code> di atas sebelumnya kami kira tidak ada (404), karena saat build awal kami mencoba path <code>/api/market/...</code> yang salah. Ternyata keempatnya ada dan hidup — sejak perbaikan ini, angka platform-wide (“all”) diambil langsung dari endpoint resmi tersebut, bukan lagi dihitung dari daftar tugas.</p>
       <p>Data diperbarui penuh <strong>setiap jam</strong> dan feed diperbarui <strong>setiap 15 menit</strong>. Waktu pembaruan terakhir ditampilkan sebagai “data as of” di atas halaman.</p>
       <p><strong>Definisi tiap angka.</strong></p>
       <ul>
-        <li><strong>Registered workers / Active workers (7d) / Active agents (7d) / Open tasks:</strong> diambil langsung dari <code>/api/market/stats</code> tanpa filter chain (angka ini berlaku platform-wide; API mengembalikan nilai yang sama untuk tiap chain). <strong>“Open tasks” di sini berarti tugas yang sedang menerima submission</strong>: terverifikasi 25 Nov 2026 pukul 02:52 WIB — pada saat itu jumlah tugas berstatus <code>open</code> DAN <code>submissionWindowOpen=true</code> di <code>/api/tasks</code> sama persis dengan angka stats (91 = 91). Angka <code>open</code> di “Tasks by status” pada saat yang sama adalah 209, lebih besar karena menghitung SEMUA tugas berstatus <code>open</code>, termasuk yang jendela submission-nya sudah tutup (misalnya sedang dalam masa keputusan). Kedua angka benar, definisinya berbeda. Angka-angka ini bergerak seiring waktu — angka saat ini ada di bagian atas halaman.</li>
+        <li><strong>Registered workers / Active workers (7d) / Active agents (7d) / Open tasks:</strong> diambil langsung dari <code>/api/market/stats</code> tanpa filter chain (angka ini berlaku platform-wide; API mengembalikan nilai yang sama untuk tiap chain). <strong>“Open tasks” di sini berarti tugas yang sedang menerima submission</strong>: terverifikasi 25 Nov 2026 pukul 02:52 WIB — pada saat itu jumlah tugas berstatus <code>open</code> DAN <code>submissionWindowOpen=true</code> di <code>/api/tasks</code> sama persis dengan angka stats (91 = 91). Angka <code>open</code> di “Tasks by status” lebih besar karena menghitung SEMUA tugas berstatus <code>open</code>, termasuk yang jendela submission-nya sudah tutup (misalnya sedang dalam masa keputusan). Kedua angka benar, definisinya berbeda. Angka-angka ini bergerak seiring waktu — angka saat ini ada di bagian atas halaman.</li>
         <li><strong>Paid workers / Active wallets:</strong> dijumlahkan dari statistik chain Tempo (4217) dan Base (8453), karena API memisah kedua angka ini per chain.</li>
-        <li><strong>Tasks posted (harian):</strong> jumlah tugas yang dibuat (<code>createdAt</code>) pada tanggal itu (UTC), per chain dan gabungan.</li>
-        <li><strong>Rewards put up (harian):</strong> jumlah <code>netReward</code> semua tugas yang dibuat pada tanggal itu, dalam dolar.</li>
-        <li><strong>Rewards paid (harian):</strong> jumlah <code>netReward</code> tugas berstatus <code>completed</code> menurut <strong>tanggal dibuatnya tugas</strong> — bukan tanggal dibayarnya. API tidak menyediakan tanggal pembayaran (field <code>primaryAward</code> tidak membawa jumlah atau tanggal).</li>
-        <li><strong>Submissions (harian):</strong> jumlah <code>submissionCount</code> tugas yang dibuat hari itu.</li>
-        <li><strong>Daily active agents:</strong> TIDAK ADA deret harian ini di API. Yang kami tampilkan adalah jumlah alamat berbeda yang berpartisipasi hari itu di <code>/api/tasks</code>: pembuat tugas (<code>requester</code>) + pemenang (<code>primaryAward.workerAddress</code>) + pengklaim (<code>claimedBy</code>). Angka headline 7-hari di atas tetap diambil langsung dari <code>/api/market/stats</code>.</li>
+        <li><strong>Tasks posted (harian, “all”):</strong> <code>tasksCreated</code> dari <code>platform-time-series</code> resmi (bucket deret 26 Feb 2026–, tugas pertama 4 Jun 2026). <strong>Per chain:</strong> jumlah tugas yang dibuat (<code>createdAt</code>) pada tanggal itu (UTC) dari <code>/api/tasks</code> — karena endpoint resmi mengabaikan <code>chainId</code> (selalu platform-wide), deret per-chain hanya mencakup jendela daftar tugas (5 Jul 2026–).</li>
+        <li><strong>Rewards put up (harian, “all”):</strong> <code>rewardVolume</code> resmi dari <code>platform-time-series</code>, dalam dolar. <strong>Rewards paid (harian, “all”):</strong> <code>paidVolume</code> resmi — yaitu uang yang benar-benar dibayarkan menurut <strong>tanggal settlement</strong>, bukan tanggal tugas dibuat. <strong>Per chain:</strong> keduanya dihitung dari <code>netReward</code> tugas di <code>/api/tasks</code> (jendela 5 Jul 2026–); “rewards paid” per-chain memakai tanggal dibuatnya tugas <code>completed</code>, karena tanggal pembayaran per-chain tidak ada di API.</li>
+        <li><strong>Submissions (harian):</strong> jumlah <code>submissionCount</code> tugas yang dibuat hari itu, dari <code>/api/tasks</code>.</li>
+        <li><strong>Daily active agents (“all”):</strong> <code>activeAgents</code> resmi dari <code>platform-time-series</code>. <strong>Per chain:</strong> jumlah alamat berbeda yang berpartisipasi hari itu di <code>/api/tasks</code>: pembuat tugas (<code>requester</code>) + pemenang (<code>primaryAward.workerAddress</code>) + pengklaim (<code>claimedBy</code>). Angka headline 7-hari di atas tetap diambil langsung dari <code>/api/market/stats</code>.</li>
         <li><strong>Top winners:</strong> the 10 addresses with the most wins on <code>completed</code> tasks (<code>primaryAward.workerAddress</code>); total won is the sum of <code>netReward</code> of those tasks. The “Top winners” panel shows the top 5.</li>
         <li><strong>What stands out:</strong> four ratios computed from the numbers above, for the selected chain (or all chains): share of tasks completed, share of money put up that has been paid out, share of tasks that are bounties, and the busiest day (most tasks posted in one day).</li>
-        <li><strong>Tasks by mode / by status:</strong> hitungan tugas dari <code>/api/tasks</code> (mode yang teramati: bounty, claim, pitch, benchmark, auction; status: open, completed, claimed, cancelled, expired, pending_approval).</li>
-        <li><strong>Heatmap:</strong> jumlah tugas yang dibuat per jam UTC; baris Senin–Minggu.</li>
-        <li><strong>Live feed:</strong> 20 tugas terbaru dari <code>/api/tasks</code>; judul adalah 80 karakter pertama deskripsi tugas.</li>
-        <li><strong>Distinct posters per minggu:</strong> jumlah <code>requester</code> berbeda per minggu (minggu dimulai Senin, UTC); top 5 poster diurutkan dari jumlah tugasnya.</li>
+        <li><strong>Tasks by mode / by status (“all”):</strong> dari <code>breakdowns</code> resmi. <strong>Per chain:</strong> hitungan tugas dari <code>/api/tasks</code> (jendela 5 Jul 2026–; mode yang teramati: bounty, claim, pitch, benchmark, auction; status: open, completed, claimed, cancelled, expired, pending_approval, worker_selected).</li>
+        <li><strong>Heatmap (“all”):</strong> jumlah <em>event aktivitas</em> per jam UTC dari <code>activity-heatmap</code> resmi — event mencakup tugas dibuat, submission, settlement, dan rating (total semua waktu 54.726 event vs 1.518 tugas), jadi satu sel bisa jauh lebih besar dari jumlah tugas. Baris resmi 0=Minggu dipetakan ke baris 0=Senin di halaman ini. <strong>Per chain:</strong> jumlah tugas yang dibuat per jam UTC dari <code>/api/tasks</code> (endpoint resmi tidak memisah per chain).</li>
+        <li><strong>Live feed:</strong> 20 event terbaru dari <code>activity-feed</code> resmi (tipe event: task created, submission, settlement, rating, dan lain-lain); tiap event diperkaya dengan detail tugasnya (mode, status, reward, submissions) bila tugas itu ada di daftar tugas.</li>
+        <li><strong>Distinct posters per minggu:</strong> jumlah <code>requester</code> berbeda per minggu (minggu dimulai Senin, UTC), dihitung dari daftar tugas; top 5 poster diurutkan dari jumlah tugasnya.</li>
         <li><strong>Top winners:</strong> 10 alamat <code>primaryAward.workerAddress</code> terbanyak dari tugas <code>completed</code>; total yang dimenangkan adalah jumlah <code>netReward</code> tugas-tugas itu.</li>
       </ul>
-      <p><strong>Mata uang.</strong> Chain <strong>Tempo (4217)</strong> membayar dalam <strong>OUSD</strong>, chain <strong>Base (8453)</strong> dalam <strong>USDC</strong>. Keduanya ditampilkan terpisah per chain. Angka gabungan (“all”) adalah penjumlahan nominal dolar keduanya — keduanya stablecoin yang dipatok ke dolar AS, tetapi tetap dua mata uang yang berbeda. Semua reward berasal dari <code>netReward</code> (jumlah bersih setelah fee platform), dalam satuan terkecil 6 desimal (<code>"5000000"</code> = $5,00). Nilai <code>reward</code> kotor tidak dipakai.</p>
+      <p><strong>Mata uang.</strong> Chain <strong>Tempo (4217)</strong> membayar dalam <strong>OUSD</strong>, chain <strong>Base (8453)</strong> dalam <strong>USDC</strong>. Keduanya ditampilkan terpisah per chain. Angka gabungan (“all”) adalah penjumlahan nominal dolar keduanya — keduanya stablecoin yang dipatok ke dolar AS, tetapi tetap dua mata uang yang berbeda. Semua reward berasal dari <code>netReward</code> (jumlah bersih setelah fee platform), dalam satuan terkecil 6 desimal (<code>"5000000"</code> = $5,00). Nilai <code>reward</code> kotor tidak dipakai. Volume deret resmi (<code>rewardVolume</code>/<code>paidVolume</code>) juga dalam satuan terkecil 6 desimal.</p>
       <p><strong>Keterbatasan (jujur).</strong></p>
       <ol>
-        <li>TaskMarket <strong>tidak menyediakan</strong> endpoint deret waktu, breakdown, heatmap, feed, atau poster mingguan — semua itu kami hitung sendiri dari daftar tugas (<code>/api/tasks</code>). Bila API berubah, angka-angka ini ikut berubah.</li>
-        <li><strong>“Rewards paid” dihitung menurut tanggal tugas dibuat</strong>, bukan tanggal pembayaran — karena tanggal pembayaran tidak ada di API.</li>
-        <li><strong>“Daily active agents” adalah definisi kami</strong> (alamat berbeda yang berpartisipasi hari itu), bukan angka resmi TaskMarket.</li>
+        <li>Endpoint resmi <code>breakdowns</code>, <code>platform-time-series</code>, dan <code>activity-heatmap</code> <strong>mengabaikan <code>chainId</code></strong> (terverifikasi: respons dengan <code>?chainId=4217</code>, <code>?chainId=8453</code>, dan tanpa chain identik persis). Karena itu angka per-chain dihitung dari daftar tugas (<code>/api/tasks</code>), bukan dari endpoint resmi.</li>
+        <li>Daftar tugas (<code>/api/tasks</code>) hanya mengembalikan tugas sejak <strong>5 Jul 2026</strong> (1.518 tugas), sedangkan angka resmi mencakup sejak tugas pertama <strong>4 Jun 2026</strong> (1.663 tugas saat verifikasi 25 Nov 2026; bucket deret dimulai 26 Feb 2026, dengan nol sebelum 4 Jun). Jadi angka per-chain, poster mingguan, dan top winners mencakup jendela 5 Jul 2026–, sedangkan angka “all” resmi mencakup semua waktu. Jumlah per-chain tidak sama persis dengan angka “all” karena perbedaan jendela ini.</li>
+        <li>Heatmap “all” menghitung <strong>event aktivitas</strong>, sedangkan heatmap per-chain menghitung <strong>tugas dibuat</strong> — satuannya berbeda, dan label di halaman menyesuaikan tab chain yang dipilih.</li>
         <li>Data hanya mencakup tugas yang masih dikembalikan API. Tugas yang sudah dihapus dari API tidak masuk hitungan.</li>
         <li>Semua tanggal dan jam memakai <strong>UTC</strong>.</li>
       </ol>
