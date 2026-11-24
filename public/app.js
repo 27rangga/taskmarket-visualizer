@@ -192,11 +192,24 @@
         out.push('<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="3" fill="#221e1a" stroke="#e74079" stroke-width="1.5">' +
           "<title>" + esc(r.date + ": " + label) + "</title></circle>");
       });
-      // x labels: up to 6
-      var step = Math.max(1, Math.ceil(rows.length / 6));
+      // x labels: evenly spaced, count adapts to chart width so labels
+      // never overlap or clip. Each "MM-DD" label is ~33px at 11px mono;
+      // keep ~15px gap. First label starts at the axis, last label ends
+      // at it — a centered last label would run past the right edge and
+      // get clipped (seen live: "11-2" instead of "11-24"), and fixed
+      // 6 labels collide at 360px (5-day spacing ≈ 41px < label width).
+      var maxLabels = Math.max(2, Math.min(6, Math.floor(iw / 48)));
+      var labelIdx = [];
+      for (var li = 0; li < maxLabels; li++) {
+        var idx = Math.round(li * (rows.length - 1) / (maxLabels - 1));
+        if (labelIdx.indexOf(idx) === -1) labelIdx.push(idx);
+      }
       rows.forEach(function (r, i) {
-        if (i % step === 0 || i === rows.length - 1) {
-          out.push('<text x="' + x(i).toFixed(1) + '" y="' + (H - 8) + '" fill="#b0a79d" font-size="11" font-family="Departure Mono, monospace" text-anchor="middle">' +
+        if (labelIdx.indexOf(i) !== -1) {
+          var anchor = "middle";
+          if (rows.length > 1 && i === 0) anchor = "start";
+          else if (rows.length > 1 && i === rows.length - 1) anchor = "end";
+          out.push('<text x="' + x(i).toFixed(1) + '" y="' + (H - 8) + '" fill="#b0a79d" font-size="11" font-family="Departure Mono, monospace" text-anchor="' + anchor + '">' +
             esc(r.date.slice(5)) + "</text>");
         }
       });
@@ -248,8 +261,11 @@
     var peak = { d: -1, h: -1 };
     hm.forEach(function (row, d) { row.forEach(function (v, h) { if (v === max && max > 0 && peak.d === -1) peak = { d: d, h: h }; }); });
     var html = ['<div class="hm-corner"></div>'];
+    // Hour labels: every 3h on desktop, every 6h on narrow screens so the
+    // 2-digit labels fit their ~9px columns at 360px instead of clipping.
+    var hourStep = window.innerWidth < 480 ? 6 : 3;
     for (var h = 0; h < 24; h++) {
-      html.push('<div class="hm-hour">' + (h % 3 === 0 ? String(h).padStart(2, "0") : "") + "</div>");
+      html.push('<div class="hm-hour">' + (h % hourStep === 0 ? String(h).padStart(2, "0") : "") + "</div>");
     }
     hm.forEach(function (row, d) {
       html.push('<div class="hm-day">' + DAYS[d] + "</div>");
@@ -285,6 +301,46 @@
     }).join("");
   }
 
+  function renderInsights() {
+    var scope = chainScope();
+    var t = scopeTotals();
+    var el = $("insights-list");
+    $("insights-sub").textContent = scope === "all"
+      ? "All chains, all time."
+      : CHAINS[scope].label + " · " + scope + ", all time.";
+    if (!data || !t || !t.tasksTotal) { el.innerHTML = "<li>No data.</li>"; return; }
+    function pct(a, b) {
+      if (!b) return "—";
+      return (100 * a / b).toFixed(1) + "%";
+    }
+    var byMode = (data.byMode && data.byMode[scope]) || {};
+    var byStatus = (data.byStatus && data.byStatus[scope]) || {};
+    var rows = (data.daily || []).filter(function (r) { return r.chain === scope; });
+    var busiest = null;
+    rows.forEach(function (r) {
+      if (!busiest || (Number(r.tasksPosted) || 0) > (Number(busiest.tasksPosted) || 0)) busiest = r;
+    });
+    var items = [
+      { v: pct(byStatus.completed || 0, t.tasksTotal), l: "of tasks are completed (" + fmtInt(byStatus.completed || 0) + " of " + fmtInt(t.tasksTotal) + ")" },
+      { v: pct(t.rewardsPaidTotal || 0, t.rewardsPutUpTotal || 0), l: "of money put up has been paid out (" + fmtMoney(t.rewardsPaidTotal || 0) + " of " + fmtMoney(t.rewardsPutUpTotal || 0) + ")" },
+      { v: pct(byMode.bounty || 0, t.tasksTotal), l: "of tasks are bounties (" + fmtInt(byMode.bounty || 0) + " of " + fmtInt(t.tasksTotal) + ")" },
+      { v: busiest ? fmtInt(busiest.tasksPosted) + " tasks" : "—", l: busiest ? "posted on " + fmtDateShort(busiest.date) + " — the busiest day" : "busiest day: no data" }
+    ];
+    el.innerHTML = items.map(function (it) {
+      return '<li><span class="in-val">' + esc(it.v) + '</span><span class="in-label">' + esc(it.l) + "</span></li>";
+    }).join("");
+  }
+
+  function renderWinners() {
+    var el = $("top-winners");
+    var top = (data.topWinners || []).slice(0, 5);
+    if (!top.length) { el.innerHTML = "<li>No winners yet.</li>"; return; }
+    el.innerHTML = top.map(function (w, i) {
+      return '<li><span class="tp-name">#' + (i + 1) + " " + esc(shortAddr(w.workerAddress)) + "</span>" +
+        '<span class="tp-val">' + fmtInt(w.wins) + (w.wins === 1 ? " win" : " wins") + " · " + fmtMoney(w.totalWon) + "</span></li>";
+    }).join("");
+  }
+
   function renderPosters() {
     var scope = chainScope();
     var weeks = (data.postersWeekly || []).filter(function (w) { return w.chain === scope; });
@@ -315,6 +371,7 @@
   function renderAll() {
     renderAsOf();
     renderHeadline();
+    renderInsights();
     renderFlow();
     renderDaily();
     renderBars("mode-bars", data.byMode && data.byMode[chainScope()], MODES);
@@ -322,6 +379,7 @@
     renderHeatmap();
     renderFeed();
     renderPosters();
+    renderWinners();
   }
 
   function showUnavailable() {

@@ -62,6 +62,11 @@
     <div class="stat panel"><p class="stat-label">Rewards paid</p><p class="stat-num" id="st-paid">—</p><p class="stat-sub" id="st-paid-sub">all time</p></div>
   </section>
 
+  <section class="panel insights-sec" id="insights" aria-label="What stands out">
+    <div class="section-head"><h2>What stands out</h2><p class="section-sub" id="insights-sub">All chains, all time.</p></div>
+    <ul class="insights" id="insights-list"></ul>
+  </section>
+
   <section class="panel flow" id="flow" aria-label="Money flow">
     <div class="section-head">
       <h2>From poster to winner</h2>
@@ -152,6 +157,11 @@
     <ol class="top5" id="top-posters"></ol>
   </section>
 
+  <section class="panel winners-sec" id="winners" aria-label="Top winners">
+    <div class="section-head"><h2>Top winners</h2><p class="section-sub" id="winners-sub">Most wins, all time · both chains.</p></div>
+    <ol class="top5" id="top-winners"></ol>
+  </section>
+
   <section class="panel method" id="method" aria-label="Method note">
     <div class="section-head"><h2>Catatan metode</h2></div>
     <div id="method-body">
@@ -163,13 +173,15 @@
       <p>Data diperbarui penuh <strong>setiap jam</strong> dan feed diperbarui <strong>setiap 15 menit</strong>. Waktu pembaruan terakhir ditampilkan sebagai “data as of” di atas halaman.</p>
       <p><strong>Definisi tiap angka.</strong></p>
       <ul>
-        <li><strong>Registered workers / Active workers (7d) / Active agents (7d) / Open tasks:</strong> diambil langsung dari <code>/api/market/stats</code> tanpa filter chain (angka ini berlaku platform-wide; API mengembalikan nilai yang sama untuk tiap chain). <strong>“Open tasks” di sini berarti tugas yang sedang menerima submission</strong>: terverifikasi 25 Nov 2026 — jumlah tugas berstatus <code>open</code> DAN <code>submissionWindowOpen=true</code> di <code>/api/tasks</code> sama persis dengan angka stats (91 = 91). Angka <code>open</code> di “Tasks by status” (209) lebih besar karena menghitung SEMUA tugas berstatus <code>open</code>, termasuk yang jendela submission-nya sudah tutup (misalnya sedang dalam masa keputusan). Kedua angka benar, definisinya berbeda.</li>
+        <li><strong>Registered workers / Active workers (7d) / Active agents (7d) / Open tasks:</strong> diambil langsung dari <code>/api/market/stats</code> tanpa filter chain (angka ini berlaku platform-wide; API mengembalikan nilai yang sama untuk tiap chain). <strong>“Open tasks” di sini berarti tugas yang sedang menerima submission</strong>: terverifikasi 25 Nov 2026 pukul 02:52 WIB — pada saat itu jumlah tugas berstatus <code>open</code> DAN <code>submissionWindowOpen=true</code> di <code>/api/tasks</code> sama persis dengan angka stats (91 = 91). Angka <code>open</code> di “Tasks by status” pada saat yang sama adalah 209, lebih besar karena menghitung SEMUA tugas berstatus <code>open</code>, termasuk yang jendela submission-nya sudah tutup (misalnya sedang dalam masa keputusan). Kedua angka benar, definisinya berbeda. Angka-angka ini bergerak seiring waktu — angka saat ini ada di bagian atas halaman.</li>
         <li><strong>Paid workers / Active wallets:</strong> dijumlahkan dari statistik chain Tempo (4217) dan Base (8453), karena API memisah kedua angka ini per chain.</li>
         <li><strong>Tasks posted (harian):</strong> jumlah tugas yang dibuat (<code>createdAt</code>) pada tanggal itu (UTC), per chain dan gabungan.</li>
         <li><strong>Rewards put up (harian):</strong> jumlah <code>netReward</code> semua tugas yang dibuat pada tanggal itu, dalam dolar.</li>
         <li><strong>Rewards paid (harian):</strong> jumlah <code>netReward</code> tugas berstatus <code>completed</code> menurut <strong>tanggal dibuatnya tugas</strong> — bukan tanggal dibayarnya. API tidak menyediakan tanggal pembayaran (field <code>primaryAward</code> tidak membawa jumlah atau tanggal).</li>
         <li><strong>Submissions (harian):</strong> jumlah <code>submissionCount</code> tugas yang dibuat hari itu.</li>
         <li><strong>Daily active agents:</strong> TIDAK ADA deret harian ini di API. Yang kami tampilkan adalah jumlah alamat berbeda yang berpartisipasi hari itu di <code>/api/tasks</code>: pembuat tugas (<code>requester</code>) + pemenang (<code>primaryAward.workerAddress</code>) + pengklaim (<code>claimedBy</code>). Angka headline 7-hari di atas tetap diambil langsung dari <code>/api/market/stats</code>.</li>
+        <li><strong>Top winners:</strong> the 10 addresses with the most wins on <code>completed</code> tasks (<code>primaryAward.workerAddress</code>); total won is the sum of <code>netReward</code> of those tasks. The “Top winners” panel shows the top 5.</li>
+        <li><strong>What stands out:</strong> four ratios computed from the numbers above, for the selected chain (or all chains): share of tasks completed, share of money put up that has been paid out, share of tasks that are bounties, and the busiest day (most tasks posted in one day).</li>
         <li><strong>Tasks by mode / by status:</strong> hitungan tugas dari <code>/api/tasks</code> (mode yang teramati: bounty, claim, pitch, benchmark, auction; status: open, completed, claimed, cancelled, expired, pending_approval).</li>
         <li><strong>Heatmap:</strong> jumlah tugas yang dibuat per jam UTC; baris Senin–Minggu.</li>
         <li><strong>Live feed:</strong> 20 tugas terbaru dari <code>/api/tasks</code>; judul adalah 80 karakter pertama deskripsi tugas.</li>

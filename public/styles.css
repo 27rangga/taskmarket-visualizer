@@ -232,7 +232,7 @@ code, .mono { font-family: var(--mono); font-size: .86em; }
   gap: 2px;
   min-width: 0;
 }
-.hm-corner, .hm-hour {
+.hm-corner {
   font-family: var(--mono);
   font-size: 9px;
   color: var(--muted);
@@ -240,6 +240,17 @@ code, .mono { font-family: var(--mono); font-size: .86em; }
   line-height: 12px;
   align-self: center;
   overflow: hidden;
+}
+.hm-hour {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 12px;
+  align-self: center;
+  /* No overflow:hidden here: at 360px a 2-digit label is ~11px in a ~9px
+     column, so it may bleed 1px into the (empty) neighbour cells instead
+     of being cut to a single digit. */
 }
 .hm-day {
   font-family: var(--mono);
@@ -291,6 +302,16 @@ code, .mono { font-family: var(--mono); font-size: .86em; }
 .chip.chain-8453 { color: var(--paper); border-color: var(--paper); }
 .chip.status-completed { color: var(--paper); border-color: var(--paper); }
 
+/* ---------- insights ---------- */
+.insights { list-style: none; margin: 0; padding: 0; }
+.insights li {
+  display: flex; gap: 12px; align-items: baseline;
+  padding: 9px 0; border-top: 1px solid var(--line); font-size: 14px;
+}
+.insights li:first-child { border-top: 0; padding-top: 0; }
+.insights .in-val { font-family: var(--mono); font-size: 15px; color: var(--paper); white-space: nowrap; }
+.insights .in-label { color: var(--muted); }
+
 /* ---------- posters ---------- */
 .poster-bars { display: flex; align-items: stretch; gap: 6px; height: 132px; margin-bottom: 18px; }
 .poster-bar { flex: 1; display: flex; flex-direction: column; align-items: center; min-width: 0; height: 100%; }
@@ -335,6 +356,16 @@ footer { border-top: 1px solid var(--line); margin-top: 32px; }
 .foot-asof span { color: var(--cream); }
 
 /* ---------- wider screens ---------- */
+/* ---------- very small screens (360px) ---------- */
+@media (max-width: 480px) {
+  .panel { padding: 16px 14px; }
+  .hm-hour { font-size: 8px; }
+  .hm-day { font-size: 9px; }
+  .poster-bar .pb-week { font-size: 9px; }
+  .stat-num { font-size: 18px; }
+  .hero { padding-top: 28px; }
+}
+
 @media (min-width: 640px) {
   .headline { grid-template-columns: repeat(3, 1fr); }
   .stat-num { font-size: 22px; }
