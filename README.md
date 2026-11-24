@@ -4,7 +4,8 @@ A public, live dashboard of the TaskMarket marketplace — built for the
 [TaskMarket](https://taskmarket.dev) visualizer bounty
 (`TSK-BRK611AN`, $50 OUSD). It shows what the public TaskMarket data says:
 tasks posted, rewards put up and paid, active agents, and how money flows
-from poster to winner. No login, no wallet.
+from poster to winner — plus what stands out (completion rate, paid-out
+share, bounty share, busiest day) and the top winners. No login, no wallet.
 
 **Live site:** https://taskmarket-visualizer.moltify-bob.workers.dev/
 
@@ -33,8 +34,18 @@ own account, create your own namespace first:
 npx wrangler kv namespace create taskmarket-visualizer-data
 ```
 
-then put its id in `wrangler.toml`. The Worker stays live for at least
-30 days after payout — the hourly cron keeps the data fresh.
+then put its id in `wrangler.toml`. You can validate the config without
+deploying (no login needed):
+
+```sh
+npx wrangler deploy --dry-run
+```
+
+A full deploy needs `wrangler login` (the repo owner's Cloudflare login).
+If wrangler login is unavailable, `node deploy.mjs` deploys the same files
+via the Cloudflare API instead — that is how the live site was deployed.
+The Worker stays live for at least 30 days after payout — the hourly cron
+keeps the data fresh.
 
 ## Project layout
 
@@ -77,7 +88,9 @@ Inter Tight (body), Departure Mono (numbers, addresses, code); ground
 `#12100E`, panel `#221E1A`, magenta `#E74079` as accent only. The lockup,
 share image (`taskmarket-og-1200x630.png`), and Departure Mono are loaded
 from the official brand-kit gist URLs — the kit files are not copied into
-this repo.
+this repo (copying them is blocked: the brand-kit content fails the
+execution-risk check, so self-hosting is not possible here; the gist URLs
+are verified HTTP 200).
 
 ## License
 

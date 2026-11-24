@@ -1,5 +1,8 @@
 name = "taskmarket-visualizer"
 compatibility_date = "2026-11-24"
+# Worker utama: main WAJIB diisi — tanpanya wrangler deploy membuat worker
+# aset-otomatis dan worker.js (endpoint /api/data + cron) TIDAK dipakai.
+main = "worker.js"
 
 # KV: data hasil agregasi (binding DATA di worker.js).
 # Namespace "taskmarket-visualizer-data", akun 27rngga@gmail.com.
@@ -14,5 +17,8 @@ crons = ["0 * * * *", "*/15 * * * *"]
 
 [assets]
 directory = "./public"
+# binding WAJIB: worker.js melayani file statis lewat env.ASSETS.fetch().
+# Tanpa binding, aset tidak bisa dijangkau Worker dan halaman 404.
+binding = "ASSETS"
 # Frontend (HTML/CSS/JS) tinggal di public/. Worker TIDAK melayani HTML sendiri;
 # request selain /api/data diteruskan ke aset statis (env.ASSETS).

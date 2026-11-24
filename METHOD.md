@@ -23,13 +23,15 @@ Waktu pembaruan terakhir ditampilkan sebagai "data as of" di atas halaman.
   diambil langsung dari `/api/market/stats` tanpa filter chain (angka ini
   berlaku platform-wide; API mengembalikan nilai yang sama untuk tiap chain).
   **"Open tasks" di sini berarti tugas yang sedang menerima submission**:
-  terverifikasi 25 Nov 2026 — jumlah tugas berstatus `open` DAN
-  `submissionWindowOpen=true` di `/api/tasks` sama persis dengan angka stats
-  (91 = 91). Lihat juga "Tasks by status" di bawah: angka `open` di sana
-  (209) lebih besar karena menghitung SEMUA tugas berstatus `open`, termasuk
-  yang jendela submission-nya sudah tutup (misalnya sedang dalam masa
-  keputusan). Kedua angka benar, definisinya berbeda — dan perbedaan ini
-  kami tulis di sini supaya tidak tampak bertentangan.
+  terverifikasi 25 Nov 2026 pukul 02:52 WIB — pada saat itu jumlah tugas
+  berstatus `open` DAN `submissionWindowOpen=true` di `/api/tasks` sama persis
+  dengan angka stats (91 = 91). Lihat juga "Tasks by status" di bawah: angka
+  `open` di sana pada saat yang sama adalah 209 — lebih besar karena
+  menghitung SEMUA tugas berstatus `open`, termasuk yang jendela
+  submission-nya sudah tutup (misalnya sedang dalam masa keputusan). Kedua
+  angka benar, definisinya berbeda — dan perbedaan ini kami tulis di sini
+  supaya tidak tampak bertentangan. (Angka-angka ini bergerak seiring waktu;
+  angka saat ini ada di bagian atas halaman.)
 - **Paid workers / Active wallets:** dijumlahkan dari statistik chain Tempo
   (4217) dan Base (8453), karena API memisah kedua angka ini per chain.
 - **Tasks posted (harian):** jumlah tugas yang dibuat (`createdAt`) pada tanggal
@@ -49,9 +51,10 @@ Waktu pembaruan terakhir ditampilkan sebagai "data as of" di atas halaman.
 - **Tasks by mode / by status:** hitungan tugas dari `/api/tasks` (mode yang
   teramati: bounty, claim, pitch, benchmark, auction; status: open, completed,
   claimed, cancelled, expired, pending_approval). Status `open` di sini =
-  semua tugas berstatus `open` (209 saat verifikasi 25 Nov), BERBEDA dengan
-  angka headline "Open tasks" (91) yang hanya menghitung yang jendela
-  submission-nya masih terbuka — lihat definisi di atas.
+  semua tugas berstatus `open` (209 saat verifikasi 25 Nov 2026 pukul 02:52
+  WIB), BERBEDA dengan angka headline "Open tasks" (91 pada saat yang sama)
+  yang hanya menghitung yang jendela submission-nya masih terbuka — lihat
+  definisi di atas.
 - **Heatmap:** jumlah tugas yang dibuat per jam UTC; baris Senin–Minggu.
 - **Live feed:** 20 tugas terbaru dari `/api/tasks`; judul adalah 80 karakter
   pertama deskripsi tugas.
@@ -59,6 +62,11 @@ Waktu pembaruan terakhir ditampilkan sebagai "data as of" di atas halaman.
   (minggu dimulai Senin, UTC); top 5 poster diurutkan dari jumlah tugasnya.
 - **Top winners:** 10 alamat `primaryAward.workerAddress` terbanyak dari tugas
   `completed`; total yang dimenangkan adalah jumlah `netReward` tugas-tugas itu.
+  Panel "Top winners" di halaman menampilkan 5 teratas.
+- **What stands out:** empat rasio yang dihitung dari angka-angka di atas, untuk
+  chain yang dipilih (atau semua chain): porsi tugas yang completed, porsi uang
+  yang sudah dibayarkan dari yang dijanjikan, porsi tugas bounty, dan hari
+  tersibuk (tugas terbanyak dalam satu hari).
 
 ## Mata uang
 

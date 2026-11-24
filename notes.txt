@@ -10,8 +10,10 @@ A public, live dashboard of the TaskMarket marketplace: headline numbers,
 daily series (active agents, tasks posted, rewards put up & paid) with a
 7d/30d/90d/all range switch, tasks by mode & by status, an activity heatmap,
 a live activity feed, both chains (Tempo 4217 OUSD / Base 8453 USDC), and
-distinct task posters per week — plus a hero view of money flowing from
-poster to winner. No login, no wallet, no analytics.
+distinct task posters per week — plus what stands out (completion rate,
+paid-out share, bounty share, busiest day) and the top 5 winners, plus a
+hero view of money flowing from poster to winner. No login, no wallet, no
+analytics.
 
 Stack
 -----
@@ -36,7 +38,8 @@ Full definitions and honest limits are in METHOD.md and on the page itself
 (e.g. "rewards paid" is dated by task creation because the API carries no
 payment date; "daily active agents" is distinct participating addresses
 per day; headline "Open tasks" = open tasks whose submission window is
-still open, verified 91 = 91 against the API).
+still open; verified 25 Nov 2026 02:52 WIB, when the counts were 91 = 91
+against the API — the live counts move over time, see the page).
 
 Refresh
 -------
@@ -68,12 +71,23 @@ QA (25 Nov 2026, see QA-CHECKLIST.md for evidence)
 --------------------------------------------------
 Part 1 (all must pass): hosted live 200; server-side fetch only
 (app.js fetches only "/api/data"); hourly cron + 15-min feed cron set and
-OBSERVED ticking (feed tick 20:15 UTC advanced dataAsOf 19:52:50Z ->
-20:15:07Z); cache max-age=300; "data as of" visible in 3 places +
-method note; 5 sampled numbers match the API as of dataAsOf (rolling 7d
-counts drift by +-1 inside the hourly refresh window, as the API itself
-moves); all minimum views present; repo public MIT + one-command deploy
-(see open item below); all brand/load/mobile/footer rules met
-(page ~45 KB local, <3 s load).
-Part 2 self-assessment: Creativity, Insight, Reliability, Design/brand,
-Shareability, Code/handover — each targeted >= 4/5, total >= 60, no 1s.
+OBSERVED ticking (feed ticks 20:15 UTC and 20:30 UTC advanced dataAsOf);
+cache max-age=300; "data as of" visible in 3 places + method note; 5
+sampled numbers match the API as of dataAsOf (fast-moving counts drift
+slightly inside the hourly refresh window, as the API itself moves; slow
+7-day counts match exactly); all minimum views present, plus "What stands
+out" (4 ratios) and "Top winners" (top 5); repo public MIT (19 files on
+main) + one-command deploy validated by `npx wrangler deploy --dry-run`
+from a fresh clone (exit 0, 14.86 KiB, bindings DATA + ASSETS — after
+fixing a real bug: wrangler.toml lacked `main` and `binding`); all
+brand/load/mobile/footer rules met (mobile 360px verified via headless
+screenshots, no horizontal scroll; page ~50.6 KB local files, each
+request <0.8 s, <3 s load). Chart x-labels fixed (last label was clipped
+to "11-2"); label count now adapts to chart width, verified no-overlap
+for all ranges at 360px.
+Part 2 self-assessment (perintah RANGGA 25 Nov 03:28 WIB: target 100%,
+lantai 80%): Creativity 5, Insight 5, Reliability 4, Design/brand 4,
+Shareability 5, Code/handover 5 — total 94/100, no 1s. Reliability stays
+4 (3-day stability cannot be proven before submit); Design/brand stays 4
+(brand-kit self-hosting is blocked by an execution-risk flag, so assets
+stay hotlinked from the official gist, verified HTTP 200).
