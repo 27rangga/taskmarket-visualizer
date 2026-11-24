@@ -1,0 +1,1 @@
+{"description":"Public live dashboard of the TaskMarket marketplace (bounty TSK-BRK611AN).","devDependencies":{"wrangler":"^4.0.0"},"license":"MIT","name":"taskmarket-visualizer","private":true,"scripts":{"deploy":"wrangler deploy","dev":"wrangler dev","test:pipeline":"node test-pipeline.mjs"},"type":"module","version":"1.0.0"}

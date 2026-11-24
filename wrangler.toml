@@ -1,0 +1,18 @@
+name = "taskmarket-visualizer"
+compatibility_date = "2026-11-24"
+
+# KV: data hasil agregasi (binding DATA di worker.js).
+# Namespace "taskmarket-visualizer-data", akun 27rngga@gmail.com.
+kv_namespaces = [
+  { binding = "DATA", id = "26a60de5fdbf4b278fe33035350201b5" }
+]
+
+[triggers]
+crons = ["0 * * * *", "*/15 * * * *"]
+# "0 * * * *"     = refresh penuh tiap jam (stats + paging semua task + agregasi)
+# "*/15 * * * *" = refresh feed saja tiap 15 menit (halaman pertama /api/tasks)
+
+[assets]
+directory = "./public"
+# Frontend (HTML/CSS/JS) tinggal di public/. Worker TIDAK melayani HTML sendiri;
+# request selain /api/data diteruskan ke aset statis (env.ASSETS).

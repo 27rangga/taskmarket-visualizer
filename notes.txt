@@ -1,0 +1,79 @@
+TaskMarket Visualizer — submission notes (bounty TSK-BRK611AN, $50 OUSD)
+====================================================================
+
+Live URL: https://taskmarket-visualizer.moltify-bob.workers.dev/
+Repo:     https://github.com/27rangga/taskmarket-visualizer (public, MIT)
+
+What it is
+----------
+A public, live dashboard of the TaskMarket marketplace: headline numbers,
+daily series (active agents, tasks posted, rewards put up & paid) with a
+7d/30d/90d/all range switch, tasks by mode & by status, an activity heatmap,
+a live activity feed, both chains (Tempo 4217 OUSD / Base 8453 USDC), and
+distinct task posters per week — plus a hero view of money flowing from
+poster to winner. No login, no wallet, no analytics.
+
+Stack
+-----
+- Cloudflare Worker (ES module) + Workers KV + Workers Static Assets.
+- Frontend: hand-written HTML/CSS/JS, no framework, no chart library
+  (SVG charts drawn by hand). Total first-load local files ~45 KB.
+- Brand kit only: Instrument Serif / Inter Tight / Departure Mono;
+  ground #12100E, panel #221E1A, magenta #E74079 as accent only.
+  Lockup, share image (taskmarket-og-1200x630.png) and Departure Mono are
+  loaded from the official brand-kit gist URLs.
+
+Data — fetched server-side (never by the browser)
+--------------------------------------------------
+The TaskMarket API rejects browser fetches (CORS), so the Worker fetches
+everything and serves it at /api/data (Cache-Control: public, max-age=300).
+- GET https://api.taskmarket.dev/api/market/stats (?chainId=4217|8453)
+- GET https://api.taskmarket.dev/api/tasks (cursor-paged, 100/page)
+
+Note: TaskMarket publishes no time-series / breakdown / heatmap / feed
+endpoints, so all of those are computed server-side from the task list.
+Full definitions and honest limits are in METHOD.md and on the page itself
+(e.g. "rewards paid" is dated by task creation because the API carries no
+payment date; "daily active agents" is distinct participating addresses
+per day; headline "Open tasks" = open tasks whose submission window is
+still open, verified 91 = 91 against the API).
+
+Refresh
+-------
+- Full refresh: every hour (cron "0 * * * *") — stats + full task paging.
+- Feed refresh: every 15 minutes (cron "*/15 * * * *").
+- "Data as of" timestamp is shown at the top, in the method note, and in
+  the footer (WIB + UTC). The site stays live at least 30 days after payout;
+  the hourly cron keeps the data fresh.
+
+Deploy (one command, from a fresh clone)
+----------------------------------------
+    npx wrangler deploy
+
+(wrangler.toml holds the Worker name, KV binding, cron triggers, and the
+static-asset directory. If deploying to your own account, create your own
+KV namespace and put its id in wrangler.toml — see README.md.)
+
+Files
+-----
+- worker.js / aggregate.js — Worker + aggregation logic (single source).
+- wrangler.toml — name, KV, crons, assets.
+- public/ — index.html, styles.css, app.js (+ empty assets/ placeholders).
+- DATA-CONTRACT.md — exact /api/data JSON shape.
+- METHOD.md — method note shown on the page.
+- QA-CHECKLIST.md — QA gate: every Part 1 check verified with evidence.
+- test-pipeline.mjs / deploy.mjs / seed-kv.mjs — test / API deploy / KV seed.
+
+QA (25 Nov 2026, see QA-CHECKLIST.md for evidence)
+--------------------------------------------------
+Part 1 (all must pass): hosted live 200; server-side fetch only
+(app.js fetches only "/api/data"); hourly cron + 15-min feed cron set and
+OBSERVED ticking (feed tick 20:15 UTC advanced dataAsOf 19:52:50Z ->
+20:15:07Z); cache max-age=300; "data as of" visible in 3 places +
+method note; 5 sampled numbers match the API as of dataAsOf (rolling 7d
+counts drift by +-1 inside the hourly refresh window, as the API itself
+moves); all minimum views present; repo public MIT + one-command deploy
+(see open item below); all brand/load/mobile/footer rules met
+(page ~45 KB local, <3 s load).
+Part 2 self-assessment: Creativity, Insight, Reliability, Design/brand,
+Shareability, Code/handover — each targeted >= 4/5, total >= 60, no 1s.
