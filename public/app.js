@@ -88,9 +88,9 @@
 
   function chainScope() { return state.chain; }
 
-  function dailyRows() {
+  function dailyRows(scopeOverride) {
     if (!data || !Array.isArray(data.daily)) return [];
-    var scope = chainScope();
+    var scope = scopeOverride || chainScope();
     var rows = data.daily.filter(function (r) { return r.chain === scope; });
     rows.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
     if (state.range !== "all") {
@@ -110,6 +110,43 @@
   function renderAsOf() {
     var txt = data && data.dataAsOf ? fmtAsOf(data.dataAsOf) : "—";
     document.querySelectorAll("[data-asof]").forEach(function (el) { el.textContent = txt; });
+  }
+
+  function renderHero() {
+    // R3d: hero hidup — kalimat swarm dari angka "Right now" yang sama
+    // (dataAsOf yang sama), bukan teks statis. Baris 1: entries + open
+    // tasks; baris 2 (maks. 2 butir): paid today + closing 24h (fallback
+    // ke posted today bila paidToday null, mis. time-series gagal).
+    var r = (data && data.rightNow) || {};
+    var swarm = $("hero-swarm");
+    if (swarm) {
+      if (r.openEntries != null && r.openTasks != null) {
+        swarm.innerHTML = "<b>" + esc(fmtInt(r.openEntries)) + "</b> entries circling <b>" +
+          esc(fmtInt(r.openTasks)) + "</b> open tasks";
+      } else {
+        swarm.textContent = "—";
+      }
+    }
+    var sub = $("hero-swarm-sub");
+    if (sub) {
+      var parts = [];
+      if (r.paidToday != null) parts.push(fmtMoney(r.paidToday) + " paid today");
+      if (r.closing24h != null) parts.push(fmtInt(r.closing24h) + " closing in 24 hours");
+      if (r.postedToday != null) parts.push(fmtInt(r.postedToday) + " posted today");
+      sub.textContent = parts.slice(0, 2).join(" · ");
+    }
+  }
+
+  function renderRightNow() {
+    var r = (data && data.rightNow) || {};
+    $("rn-open").textContent = fmtInt(r.openTasks);
+    $("rn-open-sub").textContent = "tasks taking entries right now";
+    $("rn-entries").textContent = fmtInt(r.openEntries);
+    $("rn-posted").textContent = fmtInt(r.postedToday);
+    $("rn-paid").textContent = fmtMoney(r.paidToday);
+    $("rn-closing").textContent = fmtInt(r.closing24h);
+    $("rn-awaiting").textContent = fmtMoney(r.awaitingRewards);
+    $("rn-awaiting-sub").textContent = fmtInt(r.awaitingCount) + ((r.awaitingCount || 0) === 1 ? " task" : " tasks") + " past deadline, undecided";
   }
 
   function renderHeadline() {
@@ -156,10 +193,28 @@
   }
 
   function renderDaily() {
-    var rows = dailyRows();
     var metric = state.metric;
+    var wrap = document.querySelector(".chart-wrap");
+    var noteEl = $("daily-scope-note");
+    // R3b: newAgents/settlements hanya ada platform-wide (baris per-chain
+    // null). Bila tab chain dipilih, tampilkan deret PLATFORM-WIDE dengan
+    // label eksplisit — panel tetap berguna, tanpa mengarang angka per-chain.
+    var fallbackAll = state.chain !== "all" && (metric === "newAgents" || metric === "settlements");
+    var rows = dailyRows(fallbackAll ? "all" : undefined);
+    if (noteEl) {
+      if (fallbackAll) {
+        noteEl.hidden = false;
+        noteEl.textContent = "Platform-wide (all chains) — the official API publishes new agents and settlements only for all chains, not per chain.";
+      } else {
+        noteEl.hidden = true;
+        noteEl.textContent = "";
+      }
+    }
     var svg = $("daily-chart");
-    var wrap = svg.parentElement;
+    if (!svg) {
+      wrap.innerHTML = '<svg id="daily-chart" viewBox="0 0 720 260" role="img" aria-label="Daily series chart"></svg>';
+      svg = $("daily-chart");
+    }
     var W = Math.max(300, Math.min(720, wrap.clientWidth || 720));
     var H = W < 480 ? 230 : 260;
     var padL = 52, padR = 10, padT = 12, padB = 28;
@@ -223,8 +278,8 @@
     // re-grab after outerHTML replacement
     var total = vals.reduce(function (a, b) { return a + b; }, 0);
     var totalTxt = isMoney ? fmtMoney(total) : fmtInt(total);
-    var metricName = { tasksPosted: "tasks posted", rewardsPutUp: "rewards put up", rewardsPaid: "rewards paid", activeAgents: "daily active agents (summed)" }[metric];
-    $("daily-total").innerHTML = "Total in range: <b>" + esc(totalTxt) + "</b> " + esc(metricName) + " · " + esc(rows.length + " days");
+    var metricName = { tasksPosted: "tasks posted", rewardsPutUp: "rewards put up", rewardsPaid: "rewards paid", activeAgents: "daily active agents (summed)", newAgents: "new agents", settlements: "settlements" }[metric];
+    $("daily-total").innerHTML = "Total in range: <b>" + esc(totalTxt) + "</b> " + esc(metricName) + " · " + esc(rows.length + " days") + (fallbackAll ? " · platform-wide (all chains)" : "");
     $("daily-range-label").textContent =
       state.range === "all" ? "All time" : "Last " + state.range + " days";
   }
@@ -314,6 +369,45 @@
     }).join("");
   }
 
+  function renderLatestTasks() {
+    // R3d: daftar "Open tasks taking entries" — 25 tugas open terbaru yang
+    // jendela submission-nya masih terbuka (data.openTasksList dari
+    // aggregate.js). Fallback bila payload lama tanpa field itu: tugas open
+    // dari latestTasks (maks. 10), supaya panel tidak kosong.
+    var list = $("latest-tasks");
+    if (!list) return;
+    var items = (data.openTasksList || []).slice(0, 25);
+    if (!items.length && data.openTasksList == null && data.latestTasks) {
+      items = data.latestTasks.filter(function (f) { return f.status === "open"; }).slice(0, 10);
+    }
+    var countEl = $("open-tasks-count");
+    if (countEl) {
+      var total = data && data.rightNow ? data.rightNow.openTasks : null;
+      countEl.textContent = items.length
+        ? (total != null
+          ? "Showing " + fmtInt(items.length) + " of " + fmtInt(total) + " open tasks taking entries right now."
+          : "Showing " + fmtInt(items.length) + " open tasks taking entries right now.")
+        : "";
+    }
+    if (!items.length) { list.innerHTML = "<li><p class=\"bar-empty\">No open tasks taking entries right now.</p></li>"; return; }
+    list.innerHTML = items.map(function (f) {
+      var chain = String(f.chain || "");
+      var chainLabel = CHAINS[chain] ? CHAINS[chain].label + " · " + chain + " · " + CHAINS[chain].currency : "chain " + chain;
+      return "<li>" +
+        '<div class="feed-top"><span class="feed-code">' + esc(f.referenceCode || "—") + "</span>" +
+        '<span class="feed-time">' + esc(timeAgo(f.createdAt, data.dataAsOf)) + "</span></div>" +
+        '<p class="feed-title">' + esc(f.title || "Untitled task") + "</p>" +
+        '<div class="feed-meta">' +
+        '<span class="chip">' + esc(f.mode || "—") + "</span>" +
+        '<span class="chip status-' + esc(f.status || "") + '">' + esc(f.status || "—") + "</span>" +
+        '<span class="chip chain-' + esc(chain) + '">' + esc(chainLabel) + "</span>" +
+        '<span class="reward">' + fmtMoney(f.reward) + "</span>" +
+        (f.requesterDisplayName ? "<span>by " + esc(f.requesterDisplayName) + "</span>" : "") +
+        "<span>" + fmtInt(f.submissionCount) + " submissions</span>" +
+        "</div></li>";
+    }).join("");
+  }
+
   function renderInsights() {
     var scope = chainScope();
     var t = scopeTotals();
@@ -333,12 +427,47 @@
     rows.forEach(function (r) {
       if (!busiest || (Number(r.tasksPosted) || 0) > (Number(busiest.tasksPosted) || 0)) busiest = r;
     });
+    // R3c: busiest hour dari heatmap scope aktif ("all" = event resmi;
+    // per-chain = tugas dibuat). Jam tersibuk adalah wawasan yang tidak
+    // terlihat dari total saja.
+    var hm = (data.heatmap && data.heatmap[scope]) || null;
+    var peakTxt = "—", peakLabel = "busiest hour: no data";
+    if (hm) {
+      var pmax = 0, pd = -1, ph = -1;
+      hm.forEach(function (row, d) {
+        row.forEach(function (v, h) { if (v > pmax) { pmax = v; pd = d; ph = h; } });
+      });
+      if (pd >= 0) {
+        peakTxt = fmtInt(pmax) + (scope === "all" ? " events" : " tasks");
+        peakLabel = "in the busiest hour — " + DAYS[pd] + " " + String(ph).padStart(2, "0") + ":00 UTC" + (scope === "all" ? " (activity events)" : " (tasks created)");
+      }
+    }
     var items = [
       { v: pct(byStatus.completed || 0, t.tasksTotal), l: "of tasks are completed (" + fmtInt(byStatus.completed || 0) + " of " + fmtInt(t.tasksTotal) + ")" },
       { v: pct(t.rewardsPaidTotal || 0, t.rewardsPutUpTotal || 0), l: "of money put up has been paid out (" + fmtMoney(t.rewardsPaidTotal || 0) + " of " + fmtMoney(t.rewardsPutUpTotal || 0) + ")" },
       { v: pct(byMode.bounty || 0, t.tasksTotal), l: "of tasks are bounties (" + fmtInt(byMode.bounty || 0) + " of " + fmtInt(t.tasksTotal) + ")" },
-      { v: busiest ? fmtInt(busiest.tasksPosted) + " tasks" : "—", l: busiest ? "posted on " + fmtDateShort(busiest.date) + " — the busiest day" : "busiest day: no data" }
+      { v: busiest ? fmtInt(busiest.tasksPosted) + " tasks" : "—", l: busiest ? "posted on " + fmtDateShort(busiest.date) + " — the busiest day" : "busiest day: no data" },
+      // R3 (a) fates: completed · cancelled · expired, dari byStatus scope aktif
+      // ("all" = breakdowns resmi; per-chain = task walk).
+      { v: pct(byStatus.completed || 0, t.tasksTotal) + " · " + pct(byStatus.cancelled || 0, t.tasksTotal) + " · " + pct(byStatus.expired || 0, t.tasksTotal),
+        l: "completed · cancelled · expired — of " + fmtInt(t.tasksTotal) + " tasks" },
+      // R3 (b) awaiting decision: open tapi sudah lewat expiry.
+      { v: fmtInt(t.awaitingDecision || 0) + ((t.awaitingDecision || 0) === 1 ? " task" : " tasks"),
+        l: "open tasks are past their expiry and awaiting a decision" },
+      // R3c: busiest hour (lihat perhitungan di atas).
+      { v: peakTxt, l: peakLabel }
     ];
+    // R3c: poster concentration 30 hari terakhir — cerita "siapa yang
+    // menguasai pasar" (ala Sikasso): pangsa poster terbesar + berapa
+    // wallet memposting setengah dari semua tugas.
+    var conc = data.concentration || {};
+    var concTxt = (conc.topShare != null && conc.postersToHalf != null)
+      ? (100 * conc.topShare).toFixed(0) + "% · " + fmtInt(conc.postersToHalf) + ((conc.postersToHalf || 0) === 1 ? " wallet" : " wallets")
+      : "—";
+    var concLabel = (conc.topShare != null && conc.postersToHalf != null)
+      ? "of tasks in the last 30 days came from the biggest poster; " + fmtInt(conc.postersToHalf) + " wallets posted half of everything (" + fmtInt(conc.tasks30d || 0) + " tasks, " + fmtInt(conc.posters30d || 0) + " posters)"
+      : "poster concentration: no data";
+    items.push({ v: concTxt, l: concLabel });
     el.innerHTML = items.map(function (it) {
       return '<li><span class="in-val">' + esc(it.v) + '</span><span class="in-label">' + esc(it.l) + "</span></li>";
     }).join("");
@@ -383,7 +512,9 @@
 
   function renderAll() {
     renderAsOf();
+    renderHero();
     renderHeadline();
+    renderRightNow();
     renderInsights();
     renderFlow();
     renderDaily();
@@ -391,6 +522,7 @@
     renderBars("status-bars", data.byStatus && data.byStatus[chainScope()], null);
     renderHeatmap();
     renderFeed();
+    renderLatestTasks();
     renderPosters();
     renderWinners();
   }
@@ -438,6 +570,60 @@
     resizeTimer = setTimeout(renderDaily, 150);
   });
 
+  /* ---------- R2: hash routing + copy link per view ---------- */
+
+  function scrollToHashView() {
+    var m = /^#\/(flow|posters|heatmap|feed|daily|rightnow)$/.exec(location.hash || "");
+    if (!m) {
+      // Share link baru memakai ?view= (agar crawler membaca og per view);
+      // hash lama #/view tetap didukung.
+      var q = null;
+      try { q = new URLSearchParams(location.search).get("view"); } catch (e) { q = null; }
+      if (!/^(flow|posters|heatmap|feed|daily|rightnow)$/.test(q || "")) return;
+      m = [null, q];
+    }
+    var el = document.getElementById(m[1]);
+    if (el) el.scrollIntoView();
+  }
+  window.addEventListener("hashchange", scrollToHashView);
+
+  function copyText(text, btn) {
+    var done = function () {
+      var orig = btn.textContent;
+      btn.textContent = "Copied";
+      btn.classList.add("copied");
+      setTimeout(function () { btn.textContent = orig; btn.classList.remove("copied"); }, 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+  function fallbackCopy(text, done) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { /* clipboard tidak tersedia */ }
+    document.body.removeChild(ta);
+  }
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest ? e.target.closest(".copy-link") : null;
+    if (!btn) return;
+    var view = btn.getAttribute("data-view");
+    if (!view) return;
+    // Link yang disalin memakai ?view= supaya kartu share (og) ikut per
+    // view; hash #/view tetap dipasang agar scroll bekerja dan tautan lama
+    // tetap valid.
+    var url = location.origin + location.pathname + "?view=" + view;
+    try { history.replaceState(null, "", "?view=" + view + "#/" + view); } catch (e) { location.hash = "#/" + view; }
+    copyText(url, btn);
+    scrollToHashView();
+  });
+
   /* ---------- boot ---------- */
 
   fetch(API_URL, { headers: { Accept: "application/json" } })
@@ -449,6 +635,7 @@
       if (!json || typeof json !== "object" || !json.headline) throw new Error("bad payload");
       data = json;
       renderAll();
+      scrollToHashView();
     })
     .catch(function () {
       data = null;

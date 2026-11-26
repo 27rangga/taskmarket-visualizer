@@ -12,7 +12,10 @@
 // - GET /api/stats/activity-heatmap?range=all&dimension=hourOfWeek — heatmap
 //   aktivitas (cells: {row, col, count, volume}).
 // - GET /api/stats/activity-feed?limit=..&cursor=.. — event feed (maks limit 50).
-// - GET /api/tasks — daftar tugas (cursor pagination, limit 100).
+// - GET /api/tasks — daftar tugas (cursor pagination, limit 100). Tugas
+//   membawa expiryTime, TAPI tugas completed TIDAK punya stempel waktu
+//   selesai (tidak ada completedAt/resolvedAt; primaryAward hanya
+//   workerAddress + rating) — median time-to-decision tidak bisa dihitung.
 // - PENTING: breakdowns, time-series, dan heatmap MENGABAIKAN chainId —
 //   ketiganya selalu mengembalikan angka PLATFORM-WIDE (terverifikasi: respons
 //   ?chainId=4217, ?chainId=8453, dan tanpa chainId identik persis). Jadi angka
@@ -22,11 +25,13 @@
 //   25 Nov 2026: walk penuh = 1.518 tugas, paling awal 2026-07-05T03:31Z,
 //   sedangkan breakdowns/time-series total 1.663/1.664 tugas; tugas pertama
 //   di API 4 Jun 2026 menurut time-series, bucket deret dimulai 26 Feb 2026).
+//   Koreksi 26 Nov 2026 ~06:05 UTC: walk penuh 1.755 tugas,
+//   breakdowns total 1.902 tugas.
 //   Jadi angka per-chain mencakup jendela daftar tugas (5 Jul 2026–),
 //   sedangkan angka "all" resmi mencakup semua waktu (Jun 2026–).
 // - Heatmap resmi menghitung EVENT aktivitas (task dibuat, submission,
-//   settlement, rating, ...), BUKAN tugas: total range=all 54.726 event vs
-//   1.518 tugas. Baris heatmap resmi 0=Minggu (konvensi JS getDay —
+//   settlement, rating, ...), BUKAN tugas: total range=all 57.161 event vs
+//   1.902 tugas (per 26 Nov 2026; dulu 54.726 vs 1.518 pada 25 Nov). Baris heatmap resmi 0=Minggu (konvensi JS getDay —
 //   dibuktikan: sel tersibuk feed 7 hari terakhir (baris 2, jam 6) sama persis
 //   dengan sel tersibuk heatmap resmi; korelasi 0,507 vs 0,170 untuk
 //   konvensi 0=Senin). Di sini dipetakan ke baris 0=Senin untuk frontend.
@@ -82,6 +87,7 @@ export function compactTask(t) {
     id: t.id,
     referenceCode: t.referenceCode,
     createdAt: t.createdAt,
+    expiryTime: t.expiryTime ?? null,
     chainId: String(t.chainId),
     mode: t.mode || "unknown",
     status: t.status || "unknown",
@@ -90,6 +96,9 @@ export function compactTask(t) {
     requester: t.requester || null,
     requesterDisplayName: t.requesterDisplayName || null,
     submissionCount: Number(t.submissionCount) || 0,
+    // R3c: jendela submission masih terbuka? (dipakai "Right now": entries
+    // hanya dihitung atas tugas yang MASIH menerima submission.)
+    submissionWindowOpen: t.submissionWindowOpen ?? null,
     awardCount: Number(t.awardCount) || 0,
     winner: t.primaryAward && t.primaryAward.workerAddress
       ? t.primaryAward.workerAddress
@@ -115,6 +124,11 @@ function emptyDailyRow(date, chain) {
     submissions: 0,
     activeAgents: 0,
     posters: 0,
+    // newAgents / settlements hanya ada di time-series resmi (platform-wide);
+    // baris per-chain dan fallback tanpa time-series memakai null (bukan 0),
+    // supaya tidak ada angka per-chain yang dikarang.
+    newAgents: null,
+    settlements: null,
   };
 }
 
@@ -202,6 +216,51 @@ export function latestCompletedItem(tasks) {
   };
 }
 
+/** 10 tugas terbaru (menurut createdAt) dari daftar tugas. */
+export function latestTasksItems(tasks) {
+  return [...(tasks || [])]
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    .slice(0, 10)
+    .map((t) => ({
+      referenceCode: t.referenceCode,
+      title: t.title,
+      mode: t.mode,
+      status: t.status,
+      chain: t.chainId,
+      reward: toDollars(t.netReward),
+      createdAt: t.createdAt,
+      requesterDisplayName: t.requesterDisplayName,
+      submissionCount: t.submissionCount,
+    }));
+}
+
+/**
+ * R3d (26 Nov 2026): 25 tugas OPEN terbaru yang jendela submission-nya
+ * masih terbuka (status "open" DAN submissionWindowOpen=true) — daftar
+ * yang langsung bisa dipakai, bukan sekadar 10 tugas terbaru (yang bisa
+ * berisi tugas yang sudah tutup/lewat expiry). Urut createdAt desc.
+ * Bentuk item sama dengan latestTasksItems, ditambah expiryTime supaya
+ * frontend bisa menunjukkan kapan jendela tutup.
+ */
+export function openTasksItems(tasks, limit = 25) {
+  return [...(tasks || [])]
+    .filter((t) => t.status === "open" && t.submissionWindowOpen === true)
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    .slice(0, limit)
+    .map((t) => ({
+      referenceCode: t.referenceCode,
+      title: t.title,
+      mode: t.mode,
+      status: t.status,
+      chain: t.chainId,
+      reward: toDollars(t.netReward),
+      createdAt: t.createdAt,
+      expiryTime: t.expiryTime ?? null,
+      requesterDisplayName: t.requesterDisplayName,
+      submissionCount: t.submissionCount,
+    }));
+}
+
 /**
  * Agregasi penuh.
  * @param {Array} tasks - task ringkas (compactTask), urutan apa pun.
@@ -255,7 +314,7 @@ export function aggregate(tasks, statsAll, statsByChain, official, asOfIso) {
   const weeklyMap = new Map(); // key `${weekStart}|${chain}` -> {posters:Set, byPoster:Map}
   const winners = new Map(); // workerAddress -> {wins, totalWon}
   const totalsByChain = {};
-  for (const c of CHAINS) totalsByChain[c] = { tasksTotal: 0, rewardsPutUpTotal: 0, rewardsPaidTotal: 0 };
+  for (const c of CHAINS) totalsByChain[c] = { tasksTotal: 0, rewardsPutUpTotal: 0, rewardsPaidTotal: 0, awaitingDecision: 0 };
 
   function dailyRow(date, chain) {
     const key = date + "|" + chain;
@@ -276,6 +335,18 @@ export function aggregate(tasks, statsAll, statsByChain, official, asOfIso) {
     }
     return b;
   }
+
+  // ---- "Right now" (panel pasar hidup, selalu platform-wide) + konsentrasi
+  // poster 30 hari (cerita "siapa yang menguasai pasar") ----
+  const todayStr = dateOf(now);
+  const cutoff30 = new Date(new Date(now).getTime() - 30 * 86400 * 1000).toISOString();
+  const nowPlus24 = new Date(new Date(now).getTime() + 86400 * 1000).toISOString();
+  let openEntries = 0;
+  let closing24h = 0;
+  let awaitingRewards = 0;
+  let postedToday = 0;
+  let tasks30d = 0;
+  const poster30 = new Map(); // requester -> {tasks, rewards}
 
   for (const t of tasks) {
     const chain = CHAINS.includes(t.chainId) ? t.chainId : "all";
@@ -336,6 +407,33 @@ export function aggregate(tasks, statsAll, statsByChain, official, asOfIso) {
     tc.tasksTotal += 1;
     tc.rewardsPutUpTotal = round2(tc.rewardsPutUpTotal + putUp);
     tc.rewardsPaidTotal = round2(tc.rewardsPaidTotal + paid);
+    // Menunggu keputusan: status open tapi expiryTime sudah lewat dataAsOf.
+    // Tugas completed TIDAK punya stempel waktu selesai di API, jadi ini
+    // dipakai sebagai ganti median time-to-decision (yang tidak bisa dihitung).
+    if (t.status === "open" && t.expiryTime && t.expiryTime < now) {
+      tc.awaitingDecision += 1;
+    }
+
+    // "Right now" (platform-wide): submission di tugas open, uang pada tugas
+    // yang sudah lewat expiry, tugas yang tutup dalam 24 jam, tugas hari ini.
+    if (t.status === "open") {
+      // Entries HANYA atas tugas yang jendela submission-nya masih terbuka
+      // (submissionWindowOpen=true) — tugas open yang sudah lewat expiry
+      // (menunggu keputusan) submission-nya bukan "entries on tasks taking
+      // entries". (Tanpa filter ini angkanya membengkak: 10.672 vs ~3.800.)
+      if (t.submissionWindowOpen) openEntries += t.submissionCount;
+      if (t.expiryTime && t.expiryTime < now) awaitingRewards = round2(awaitingRewards + putUp);
+      if (t.expiryTime && t.expiryTime > now && t.expiryTime <= nowPlus24) closing24h += 1;
+    }
+    if (date === todayStr) postedToday += 1;
+    // Konsentrasi poster 30 hari terakhir.
+    if (t.createdAt >= cutoff30 && t.requester) {
+      tasks30d += 1;
+      const cur = poster30.get(t.requester) || { tasks: 0, rewards: 0 };
+      cur.tasks += 1;
+      cur.rewards = round2(cur.rewards + putUp);
+      poster30.set(t.requester, cur);
+    }
   }
 
   // ---- angka "all" RESMI (endpoint /api/stats/...) ----
@@ -343,6 +441,7 @@ export function aggregate(tasks, statsAll, statsByChain, official, asOfIso) {
     tasksTotal: tasks.length,
     rewardsPutUpTotal: round2(CHAINS.reduce((a, c) => a + totalsByChain[c].rewardsPutUpTotal, 0)),
     rewardsPaidTotal: round2(CHAINS.reduce((a, c) => a + totalsByChain[c].rewardsPaidTotal, 0)),
+    awaitingDecision: CHAINS.reduce((a, c) => a + totalsByChain[c].awaitingDecision, 0),
   };
 
   // byMode / byStatus "all" dari breakdowns resmi.
@@ -378,6 +477,8 @@ export function aggregate(tasks, statsAll, statsByChain, official, asOfIso) {
         submissions: wad ? wad.submissions : 0,
         activeAgents: Number(r.activeAgents) || 0,
         posters: wad ? wad.posters.size : 0,
+        newAgents: Number(r.newAgents) || 0,
+        settlements: Number(r.settlements) || 0,
       });
       putUpMinor += Number(r.rewardVolume) || 0;
       paidMinor += Number(r.paidVolume) || 0;
@@ -396,6 +497,8 @@ export function aggregate(tasks, statsAll, statsByChain, official, asOfIso) {
       submissions: r.submissions,
       activeAgents: r._agents.size,
       posters: r._posters.size,
+      newAgents: null,
+      settlements: null,
     });
   }
   daily.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.chain.localeCompare(b.chain)));
@@ -413,7 +516,7 @@ export function aggregate(tasks, statsAll, statsByChain, official, asOfIso) {
       for (const p of r._posters) ar._posters.add(p);
     }
     for (const r of [...allRows.values()].sort((a, b) => (a.date < b.date ? -1 : 1))) {
-      daily.push({ date: r.date, chain: "all", tasksPosted: r.tasksPosted, rewardsPutUp: round2(r.rewardsPutUp), rewardsPaid: round2(r.rewardsPaid), submissions: r.submissions, activeAgents: r._agents.size, posters: r._posters.size });
+      daily.push({ date: r.date, chain: "all", tasksPosted: r.tasksPosted, rewardsPutUp: round2(r.rewardsPutUp), rewardsPaid: round2(r.rewardsPaid), submissions: r.submissions, activeAgents: r._agents.size, posters: r._posters.size, newAgents: null, settlements: null });
     }
     daily.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.chain.localeCompare(b.chain)));
   }
@@ -487,6 +590,42 @@ export function aggregate(tasks, statsAll, statsByChain, official, asOfIso) {
     .sort((a, b) => b.wins - a.wins || b.totalWon - a.totalWon)
     .slice(0, 10);
 
+  // ---- "Right now" + konsentrasi poster 30 hari ----
+  // "Paid today" HANYA dari bucket resmi time-series (paidVolume menurut
+  // tanggal settlement); baris fallback tanpa time-series memakai tanggal
+  // dibuatnya tugas completed, jadi tidak dipakai (null -> "—").
+  let paidToday = null;
+  if (Array.isArray(off.timeSeries) && off.timeSeries.length) {
+    const todayAll = daily.find((r) => r.chain === "all" && r.date === todayStr);
+    if (todayAll) paidToday = todayAll.rewardsPaid;
+  }
+  const poster30Sorted = [...poster30.values()].sort((a, b) => b.tasks - a.tasks || b.rewards - a.rewards);
+  const top3Tasks = poster30Sorted.slice(0, 3).reduce((a, p) => a + p.tasks, 0);
+  let postersToHalf = null;
+  if (tasks30d) {
+    let acc = 0;
+    for (let i = 0; i < poster30Sorted.length; i++) {
+      acc += poster30Sorted[i].tasks;
+      if (acc >= tasks30d / 2) { postersToHalf = i + 1; break; }
+    }
+  }
+  const concentration = {
+    tasks30d,
+    posters30d: poster30.size,
+    topShare: tasks30d && poster30Sorted.length ? poster30Sorted[0].tasks / tasks30d : null,
+    top3Share: tasks30d ? top3Tasks / tasks30d : null,
+    postersToHalf,
+  };
+  const rightNow = {
+    openTasks: headline.openTasks,
+    openEntries,
+    postedToday,
+    paidToday,
+    closing24h,
+    awaitingCount: totals.awaitingDecision,
+    awaitingRewards: round2(awaitingRewards),
+  };
+
   return {
     dataAsOf: now,
     generatedAt: now,
@@ -506,9 +645,13 @@ export function aggregate(tasks, statsAll, statsByChain, official, asOfIso) {
     heatmap,
     feed,
     latestCompleted: latestCompletedItem(tasks),
+    latestTasks: latestTasksItems(tasks),
+    openTasksList: openTasksItems(tasks),
     postersWeekly,
     topWinners,
     totals,
     totalsByChain,
+    rightNow,
+    concentration,
   };
 }

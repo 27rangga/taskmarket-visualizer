@@ -12,8 +12,9 @@ public/
   styles.css   — brand-kit styling, mobile-first
   app.js       — fetch /api/data, render every view, chain/range switches
   assets/
-    fonts/     — DepartureMono-Regular.woff2 (to be added, see below)
-    img/       — (empty; lockup + og image pending copy, see below)
+    fonts/     — DepartureMono-Regular.woff2 (self-hosted)
+    img/       — taskmarket-lockup.png, taskmarket-mark.png,
+                 taskmarket-og-1200x630.png (self-hosted)
 ```
 
 `../mock-data.json` — example `/api/data` payload for local testing.
@@ -28,15 +29,18 @@ contract in `aggregate.js` (`dataAsOf`, `headline`, `chains`, `daily`,
 `totals`, `totalsByChain`). Missing fields render as "—"; a failed or
 bad fetch shows the "Data belum tersedia" panel instead of empty numbers.
 
-## Page size (local files, 25 Nov 2026)
+## Page size (local files, 26 Nov 2026)
 
 | File | Bytes |
 |---|---|
-| index.html | 15,398 |
-| styles.css | 11,791 |
-| app.js | 17,606 |
-| **Total local (initial page)** | **~44.8 KB** |
-| mock /api/data payload | ~37 KB (not part of the initial page) |
+| index.html | 21,873 |
+| styles.css | 13,807 |
+| app.js | 26,014 |
+| **Total local (initial page)** | **~60.2 KB** |
+| live /api/data payload | ~91.7 KB (not part of the initial page) |
+
+(Koreksi 26 Nov 2026: tabel lama 25 Nov — 15.398 / 11.791 / 17.606 B,
+total ~44.8 KB — sudah basi; file tumbuh saat R2+R3.)
 
 External on first load: Google Fonts (Instrument Serif + Inter Tight,
 woff2 subsets, ~30–90 KB depending on browser) and the TaskMarket lockup

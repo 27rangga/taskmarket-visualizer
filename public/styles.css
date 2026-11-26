@@ -77,6 +77,24 @@ code, .mono { font-family: var(--mono); font-size: .86em; }
 
 /* ---------- hero ---------- */
 .hero { padding: 40px 0 8px; }
+/* R3d: hero hidup — kalimat swarm dari data "Right now" (angka live,
+   bukan teks statis). Angka ditebalkan magenta (aksen brand kit);
+   baris kedua mono redup, supaya hero tetap ringkas (maks. 2 baris). */
+.swarm {
+  font-family: var(--serif);
+  font-size: clamp(21px, 5.4vw, 30px);
+  line-height: 1.25;
+  color: var(--paper);
+  margin: 0 0 4px;
+  max-width: 34em;
+}
+.swarm b { color: var(--magenta); font-weight: 400; }
+.swarm-sub {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 18px;
+}
 .hero h1 {
   font-family: var(--serif);
   font-weight: 400;
@@ -133,14 +151,37 @@ code, .mono { font-family: var(--mono); font-size: .86em; }
   padding: 20px 18px;
   margin-top: 16px;
 }
+.section-head { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; }
 .section-head h2 {
   font-family: var(--body);
   font-weight: 600;
   font-size: 20px;
-  margin: 0 0 2px;
+  margin: 0;
   color: var(--cream);
+  flex: 1 1 auto;
 }
-.section-sub { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
+.section-sub { color: var(--muted); font-size: 14px; margin: 0 0 16px; flex-basis: 100%; }
+
+/* Tombol "Copy link" per view (R2): kecil, mengikuti gaya .seg. */
+.copy-link {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--muted);
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-left: auto;
+}
+.copy-link:hover { color: var(--cream); border-color: var(--muted); }
+.copy-link.copied { color: var(--paper); border-color: var(--salmon); }
+
+/* Pesan jujur pengganti grafik (R3): metrik platform-wide saat chain dipilih. */
+.chart-note { color: var(--muted); font-size: 14px; margin: 24px 0; max-width: 34em; }
 
 /* ---------- headline stats ---------- */
 .headline {
@@ -160,6 +201,10 @@ code, .mono { font-family: var(--mono); font-size: .86em; }
   overflow-wrap: anywhere;
 }
 .stat-sub { margin: 6px 0 0; color: var(--muted); font-size: 12px; }
+
+/* Catatan sumber per panel (method note per-angka, ala Sikasso): kecil, redup. */
+.src-note { color: var(--muted); font-size: 12px; margin: 14px 0 0; }
+.src-note code { font-size: .92em; }
 
 /* ---------- flow ---------- */
 .flow-grid {
@@ -273,6 +318,7 @@ code, .mono { font-family: var(--mono); font-size: .86em; }
 .legend-peak { display: inline-block; width: 14px; height: 14px; border-radius: 3px; outline: 1.5px solid var(--magenta); }
 
 /* ---------- feed ---------- */
+.open-count { color: var(--muted); font-size: 13px; margin: 0 0 4px; }
 .feed { list-style: none; margin: 0; padding: 0; }
 .feed li {
   padding: 14px 0;

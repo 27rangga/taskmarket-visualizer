@@ -1,0 +1,3036 @@
+{
+  "dataAsOf": "2026-11-25T02:45:00.000Z",
+  "generatedAt": "2026-11-25T02:45:00.000Z",
+  "sources": {
+    "stats": "GET /api/market/stats?chainId=<id>",
+    "tasks": "GET /api/tasks (cursor-paged)"
+  },
+  "chains": {
+    "4217": {
+      "registeredWorkers": 1184,
+      "activeWorkers7d": 96,
+      "activeAgents7d": 88,
+      "openTasks": 214,
+      "paidWorkers": 342,
+      "activeWallets": 301
+    },
+    "8453": {
+      "registeredWorkers": 862,
+      "activeWorkers7d": 61,
+      "activeAgents7d": 54,
+      "openTasks": 97,
+      "paidWorkers": 208,
+      "activeWallets": 187
+    }
+  },
+  "headline": {
+    "registeredWorkers": 2046,
+    "activeWorkers7d": 157,
+    "activeAgents7d": 142,
+    "openTasks": 311,
+    "paidWorkers": 550,
+    "activeWallets": 488
+  },
+  "daily": [
+    {
+      "date": "2026-10-12",
+      "chain": "4217",
+      "tasksPosted": 7,
+      "rewardsPutUp": 5.38,
+      "rewardsPaid": 3.25,
+      "submissions": 15,
+      "activeAgents": 10,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-12",
+      "chain": "8453",
+      "tasksPosted": 5,
+      "rewardsPutUp": 16.17,
+      "rewardsPaid": 6.43,
+      "submissions": 10,
+      "activeAgents": 11,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-12",
+      "chain": "all",
+      "tasksPosted": 12,
+      "rewardsPutUp": 21.55,
+      "rewardsPaid": 9.68,
+      "submissions": 25,
+      "activeAgents": 21,
+      "posters": 7
+    },
+    {
+      "date": "2026-10-13",
+      "chain": "4217",
+      "tasksPosted": 14,
+      "rewardsPutUp": 11.76,
+      "rewardsPaid": 8.27,
+      "submissions": 29,
+      "activeAgents": 23,
+      "posters": 6
+    },
+    {
+      "date": "2026-10-13",
+      "chain": "8453",
+      "tasksPosted": 6,
+      "rewardsPutUp": 23.97,
+      "rewardsPaid": 15.54,
+      "submissions": 16,
+      "activeAgents": 10,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-13",
+      "chain": "all",
+      "tasksPosted": 20,
+      "rewardsPutUp": 35.73,
+      "rewardsPaid": 23.81,
+      "submissions": 45,
+      "activeAgents": 33,
+      "posters": 10
+    },
+    {
+      "date": "2026-10-14",
+      "chain": "4217",
+      "tasksPosted": 7,
+      "rewardsPutUp": 7.16,
+      "rewardsPaid": 4.55,
+      "submissions": 17,
+      "activeAgents": 14,
+      "posters": 5
+    },
+    {
+      "date": "2026-10-14",
+      "chain": "8453",
+      "tasksPosted": 6,
+      "rewardsPutUp": 24.55,
+      "rewardsPaid": 18.36,
+      "submissions": 16,
+      "activeAgents": 12,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-14",
+      "chain": "all",
+      "tasksPosted": 13,
+      "rewardsPutUp": 31.71,
+      "rewardsPaid": 22.91,
+      "submissions": 33,
+      "activeAgents": 26,
+      "posters": 9
+    },
+    {
+      "date": "2026-10-15",
+      "chain": "4217",
+      "tasksPosted": 10,
+      "rewardsPutUp": 8.51,
+      "rewardsPaid": 2.61,
+      "submissions": 24,
+      "activeAgents": 17,
+      "posters": 6
+    },
+    {
+      "date": "2026-10-15",
+      "chain": "8453",
+      "tasksPosted": 4,
+      "rewardsPutUp": 13.59,
+      "rewardsPaid": 6.49,
+      "submissions": 9,
+      "activeAgents": 8,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-15",
+      "chain": "all",
+      "tasksPosted": 14,
+      "rewardsPutUp": 22.1,
+      "rewardsPaid": 9.1,
+      "submissions": 33,
+      "activeAgents": 25,
+      "posters": 9
+    },
+    {
+      "date": "2026-10-16",
+      "chain": "4217",
+      "tasksPosted": 6,
+      "rewardsPutUp": 6.46,
+      "rewardsPaid": 1.69,
+      "submissions": 14,
+      "activeAgents": 10,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-16",
+      "chain": "8453",
+      "tasksPosted": 3,
+      "rewardsPutUp": 10.56,
+      "rewardsPaid": 3.08,
+      "submissions": 7,
+      "activeAgents": 7,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-16",
+      "chain": "all",
+      "tasksPosted": 9,
+      "rewardsPutUp": 17.02,
+      "rewardsPaid": 4.77,
+      "submissions": 21,
+      "activeAgents": 17,
+      "posters": 6
+    },
+    {
+      "date": "2026-10-17",
+      "chain": "4217",
+      "tasksPosted": 5,
+      "rewardsPutUp": 4.79,
+      "rewardsPaid": 1.43,
+      "submissions": 10,
+      "activeAgents": 9,
+      "posters": 2
+    },
+    {
+      "date": "2026-10-17",
+      "chain": "8453",
+      "tasksPosted": 2,
+      "rewardsPutUp": 5.88,
+      "rewardsPaid": 4.41,
+      "submissions": 7,
+      "activeAgents": 3,
+      "posters": 2
+    },
+    {
+      "date": "2026-10-17",
+      "chain": "all",
+      "tasksPosted": 7,
+      "rewardsPutUp": 10.67,
+      "rewardsPaid": 5.84,
+      "submissions": 17,
+      "activeAgents": 12,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-18",
+      "chain": "4217",
+      "tasksPosted": 8,
+      "rewardsPutUp": 8.71,
+      "rewardsPaid": 3.13,
+      "submissions": 19,
+      "activeAgents": 14,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-18",
+      "chain": "8453",
+      "tasksPosted": 3,
+      "rewardsPutUp": 10.65,
+      "rewardsPaid": 6.5,
+      "submissions": 10,
+      "activeAgents": 8,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-18",
+      "chain": "all",
+      "tasksPosted": 11,
+      "rewardsPutUp": 19.36,
+      "rewardsPaid": 9.63,
+      "submissions": 29,
+      "activeAgents": 22,
+      "posters": 7
+    },
+    {
+      "date": "2026-10-19",
+      "chain": "4217",
+      "tasksPosted": 13,
+      "rewardsPutUp": 12.19,
+      "rewardsPaid": 7.27,
+      "submissions": 30,
+      "activeAgents": 22,
+      "posters": 7
+    },
+    {
+      "date": "2026-10-19",
+      "chain": "8453",
+      "tasksPosted": 6,
+      "rewardsPutUp": 20.17,
+      "rewardsPaid": 9.09,
+      "submissions": 15,
+      "activeAgents": 12,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-19",
+      "chain": "all",
+      "tasksPosted": 19,
+      "rewardsPutUp": 32.36,
+      "rewardsPaid": 16.36,
+      "submissions": 45,
+      "activeAgents": 34,
+      "posters": 11
+    },
+    {
+      "date": "2026-10-20",
+      "chain": "4217",
+      "tasksPosted": 11,
+      "rewardsPutUp": 7.35,
+      "rewardsPaid": 4.43,
+      "submissions": 22,
+      "activeAgents": 19,
+      "posters": 6
+    },
+    {
+      "date": "2026-10-20",
+      "chain": "8453",
+      "tasksPosted": 6,
+      "rewardsPutUp": 15.13,
+      "rewardsPaid": 5.07,
+      "submissions": 12,
+      "activeAgents": 9,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-20",
+      "chain": "all",
+      "tasksPosted": 17,
+      "rewardsPutUp": 22.48,
+      "rewardsPaid": 9.5,
+      "submissions": 34,
+      "activeAgents": 28,
+      "posters": 10
+    },
+    {
+      "date": "2026-10-21",
+      "chain": "4217",
+      "tasksPosted": 11,
+      "rewardsPutUp": 7.07,
+      "rewardsPaid": 2.51,
+      "submissions": 23,
+      "activeAgents": 19,
+      "posters": 6
+    },
+    {
+      "date": "2026-10-21",
+      "chain": "8453",
+      "tasksPosted": 5,
+      "rewardsPutUp": 18.24,
+      "rewardsPaid": 11.22,
+      "submissions": 14,
+      "activeAgents": 7,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-21",
+      "chain": "all",
+      "tasksPosted": 16,
+      "rewardsPutUp": 25.31,
+      "rewardsPaid": 13.73,
+      "submissions": 37,
+      "activeAgents": 26,
+      "posters": 10
+    },
+    {
+      "date": "2026-10-22",
+      "chain": "4217",
+      "tasksPosted": 12,
+      "rewardsPutUp": 12.82,
+      "rewardsPaid": 7.18,
+      "submissions": 24,
+      "activeAgents": 19,
+      "posters": 5
+    },
+    {
+      "date": "2026-10-22",
+      "chain": "8453",
+      "tasksPosted": 8,
+      "rewardsPutUp": 28.2,
+      "rewardsPaid": 12.41,
+      "submissions": 18,
+      "activeAgents": 14,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-22",
+      "chain": "all",
+      "tasksPosted": 20,
+      "rewardsPutUp": 41.02,
+      "rewardsPaid": 19.59,
+      "submissions": 42,
+      "activeAgents": 33,
+      "posters": 8
+    },
+    {
+      "date": "2026-10-23",
+      "chain": "4217",
+      "tasksPosted": 7,
+      "rewardsPutUp": 7.68,
+      "rewardsPaid": 5.34,
+      "submissions": 16,
+      "activeAgents": 13,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-23",
+      "chain": "8453",
+      "tasksPosted": 1,
+      "rewardsPutUp": 2.61,
+      "rewardsPaid": 1.59,
+      "submissions": 4,
+      "activeAgents": 3,
+      "posters": 2
+    },
+    {
+      "date": "2026-10-23",
+      "chain": "all",
+      "tasksPosted": 8,
+      "rewardsPutUp": 10.29,
+      "rewardsPaid": 6.93,
+      "submissions": 20,
+      "activeAgents": 16,
+      "posters": 6
+    },
+    {
+      "date": "2026-10-24",
+      "chain": "4217",
+      "tasksPosted": 5,
+      "rewardsPutUp": 3.02,
+      "rewardsPaid": 1.2,
+      "submissions": 13,
+      "activeAgents": 9,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-24",
+      "chain": "8453",
+      "tasksPosted": 3,
+      "rewardsPutUp": 9.65,
+      "rewardsPaid": 5.49,
+      "submissions": 10,
+      "activeAgents": 5,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-24",
+      "chain": "all",
+      "tasksPosted": 8,
+      "rewardsPutUp": 12.67,
+      "rewardsPaid": 6.69,
+      "submissions": 23,
+      "activeAgents": 14,
+      "posters": 6
+    },
+    {
+      "date": "2026-10-25",
+      "chain": "4217",
+      "tasksPosted": 10,
+      "rewardsPutUp": 10.59,
+      "rewardsPaid": 4.47,
+      "submissions": 24,
+      "activeAgents": 18,
+      "posters": 6
+    },
+    {
+      "date": "2026-10-25",
+      "chain": "8453",
+      "tasksPosted": 8,
+      "rewardsPutUp": 31.41,
+      "rewardsPaid": 20.87,
+      "submissions": 19,
+      "activeAgents": 14,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-25",
+      "chain": "all",
+      "tasksPosted": 18,
+      "rewardsPutUp": 42,
+      "rewardsPaid": 25.34,
+      "submissions": 43,
+      "activeAgents": 32,
+      "posters": 9
+    },
+    {
+      "date": "2026-10-26",
+      "chain": "4217",
+      "tasksPosted": 14,
+      "rewardsPutUp": 14.08,
+      "rewardsPaid": 9.25,
+      "submissions": 30,
+      "activeAgents": 23,
+      "posters": 7
+    },
+    {
+      "date": "2026-10-26",
+      "chain": "8453",
+      "tasksPosted": 9,
+      "rewardsPutUp": 23.44,
+      "rewardsPaid": 6.21,
+      "submissions": 22,
+      "activeAgents": 15,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-26",
+      "chain": "all",
+      "tasksPosted": 23,
+      "rewardsPutUp": 37.52,
+      "rewardsPaid": 15.46,
+      "submissions": 52,
+      "activeAgents": 38,
+      "posters": 11
+    },
+    {
+      "date": "2026-10-27",
+      "chain": "4217",
+      "tasksPosted": 11,
+      "rewardsPutUp": 8.74,
+      "rewardsPaid": 3.72,
+      "submissions": 22,
+      "activeAgents": 16,
+      "posters": 6
+    },
+    {
+      "date": "2026-10-27",
+      "chain": "8453",
+      "tasksPosted": 4,
+      "rewardsPutUp": 14.74,
+      "rewardsPaid": 5.69,
+      "submissions": 11,
+      "activeAgents": 6,
+      "posters": 2
+    },
+    {
+      "date": "2026-10-27",
+      "chain": "all",
+      "tasksPosted": 15,
+      "rewardsPutUp": 23.48,
+      "rewardsPaid": 9.41,
+      "submissions": 33,
+      "activeAgents": 22,
+      "posters": 8
+    },
+    {
+      "date": "2026-10-28",
+      "chain": "4217",
+      "tasksPosted": 16,
+      "rewardsPutUp": 9.86,
+      "rewardsPaid": 4.09,
+      "submissions": 32,
+      "activeAgents": 24,
+      "posters": 8
+    },
+    {
+      "date": "2026-10-28",
+      "chain": "8453",
+      "tasksPosted": 4,
+      "rewardsPutUp": 9.55,
+      "rewardsPaid": 3.19,
+      "submissions": 10,
+      "activeAgents": 9,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-28",
+      "chain": "all",
+      "tasksPosted": 20,
+      "rewardsPutUp": 19.41,
+      "rewardsPaid": 7.28,
+      "submissions": 42,
+      "activeAgents": 33,
+      "posters": 11
+    },
+    {
+      "date": "2026-10-29",
+      "chain": "4217",
+      "tasksPosted": 12,
+      "rewardsPutUp": 12.78,
+      "rewardsPaid": 4.29,
+      "submissions": 27,
+      "activeAgents": 17,
+      "posters": 7
+    },
+    {
+      "date": "2026-10-29",
+      "chain": "8453",
+      "tasksPosted": 4,
+      "rewardsPutUp": 12.39,
+      "rewardsPaid": 6.37,
+      "submissions": 8,
+      "activeAgents": 7,
+      "posters": 2
+    },
+    {
+      "date": "2026-10-29",
+      "chain": "all",
+      "tasksPosted": 16,
+      "rewardsPutUp": 25.17,
+      "rewardsPaid": 10.66,
+      "submissions": 35,
+      "activeAgents": 24,
+      "posters": 9
+    },
+    {
+      "date": "2026-10-30",
+      "chain": "4217",
+      "tasksPosted": 3,
+      "rewardsPutUp": 1.79,
+      "rewardsPaid": 1.19,
+      "submissions": 10,
+      "activeAgents": 6,
+      "posters": 3
+    },
+    {
+      "date": "2026-10-30",
+      "chain": "8453",
+      "tasksPosted": 2,
+      "rewardsPutUp": 6.84,
+      "rewardsPaid": 4.95,
+      "submissions": 8,
+      "activeAgents": 4,
+      "posters": 2
+    },
+    {
+      "date": "2026-10-30",
+      "chain": "all",
+      "tasksPosted": 5,
+      "rewardsPutUp": 8.63,
+      "rewardsPaid": 6.14,
+      "submissions": 18,
+      "activeAgents": 10,
+      "posters": 5
+    },
+    {
+      "date": "2026-10-31",
+      "chain": "4217",
+      "tasksPosted": 7,
+      "rewardsPutUp": 4.29,
+      "rewardsPaid": 3.02,
+      "submissions": 14,
+      "activeAgents": 11,
+      "posters": 4
+    },
+    {
+      "date": "2026-10-31",
+      "chain": "8453",
+      "tasksPosted": 3,
+      "rewardsPutUp": 7.95,
+      "rewardsPaid": 4.5,
+      "submissions": 8,
+      "activeAgents": 8,
+      "posters": 2
+    },
+    {
+      "date": "2026-10-31",
+      "chain": "all",
+      "tasksPosted": 10,
+      "rewardsPutUp": 12.24,
+      "rewardsPaid": 7.52,
+      "submissions": 22,
+      "activeAgents": 19,
+      "posters": 6
+    },
+    {
+      "date": "2026-11-01",
+      "chain": "4217",
+      "tasksPosted": 12,
+      "rewardsPutUp": 7.35,
+      "rewardsPaid": 4.79,
+      "submissions": 28,
+      "activeAgents": 21,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-01",
+      "chain": "8453",
+      "tasksPosted": 4,
+      "rewardsPutUp": 16.37,
+      "rewardsPaid": 10.51,
+      "submissions": 8,
+      "activeAgents": 6,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-01",
+      "chain": "all",
+      "tasksPosted": 16,
+      "rewardsPutUp": 23.72,
+      "rewardsPaid": 15.3,
+      "submissions": 36,
+      "activeAgents": 27,
+      "posters": 8
+    },
+    {
+      "date": "2026-11-02",
+      "chain": "4217",
+      "tasksPosted": 9,
+      "rewardsPutUp": 5.83,
+      "rewardsPaid": 3.55,
+      "submissions": 20,
+      "activeAgents": 14,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-02",
+      "chain": "8453",
+      "tasksPosted": 5,
+      "rewardsPutUp": 18.36,
+      "rewardsPaid": 12.81,
+      "submissions": 14,
+      "activeAgents": 11,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-02",
+      "chain": "all",
+      "tasksPosted": 14,
+      "rewardsPutUp": 24.19,
+      "rewardsPaid": 16.36,
+      "submissions": 34,
+      "activeAgents": 25,
+      "posters": 8
+    },
+    {
+      "date": "2026-11-03",
+      "chain": "4217",
+      "tasksPosted": 14,
+      "rewardsPutUp": 12.99,
+      "rewardsPaid": 6.2,
+      "submissions": 30,
+      "activeAgents": 23,
+      "posters": 6
+    },
+    {
+      "date": "2026-11-03",
+      "chain": "8453",
+      "tasksPosted": 6,
+      "rewardsPutUp": 20.44,
+      "rewardsPaid": 5.8,
+      "submissions": 16,
+      "activeAgents": 8,
+      "posters": 2
+    },
+    {
+      "date": "2026-11-03",
+      "chain": "all",
+      "tasksPosted": 20,
+      "rewardsPutUp": 33.43,
+      "rewardsPaid": 12,
+      "submissions": 46,
+      "activeAgents": 31,
+      "posters": 8
+    },
+    {
+      "date": "2026-11-04",
+      "chain": "4217",
+      "tasksPosted": 14,
+      "rewardsPutUp": 14.93,
+      "rewardsPaid": 9.76,
+      "submissions": 30,
+      "activeAgents": 23,
+      "posters": 7
+    },
+    {
+      "date": "2026-11-04",
+      "chain": "8453",
+      "tasksPosted": 4,
+      "rewardsPutUp": 15.71,
+      "rewardsPaid": 6.44,
+      "submissions": 10,
+      "activeAgents": 6,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-04",
+      "chain": "all",
+      "tasksPosted": 18,
+      "rewardsPutUp": 30.64,
+      "rewardsPaid": 16.2,
+      "submissions": 40,
+      "activeAgents": 29,
+      "posters": 10
+    },
+    {
+      "date": "2026-11-05",
+      "chain": "4217",
+      "tasksPosted": 7,
+      "rewardsPutUp": 4.96,
+      "rewardsPaid": 1.62,
+      "submissions": 15,
+      "activeAgents": 10,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-05",
+      "chain": "8453",
+      "tasksPosted": 7,
+      "rewardsPutUp": 18.53,
+      "rewardsPaid": 9.99,
+      "submissions": 14,
+      "activeAgents": 12,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-05",
+      "chain": "all",
+      "tasksPosted": 14,
+      "rewardsPutUp": 23.49,
+      "rewardsPaid": 11.61,
+      "submissions": 29,
+      "activeAgents": 22,
+      "posters": 8
+    },
+    {
+      "date": "2026-11-06",
+      "chain": "4217",
+      "tasksPosted": 3,
+      "rewardsPutUp": 2.44,
+      "rewardsPaid": 1.25,
+      "submissions": 6,
+      "activeAgents": 7,
+      "posters": 1
+    },
+    {
+      "date": "2026-11-06",
+      "chain": "8453",
+      "tasksPosted": 3,
+      "rewardsPutUp": 8.85,
+      "rewardsPaid": 5.94,
+      "submissions": 8,
+      "activeAgents": 7,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-06",
+      "chain": "all",
+      "tasksPosted": 6,
+      "rewardsPutUp": 11.29,
+      "rewardsPaid": 7.19,
+      "submissions": 14,
+      "activeAgents": 14,
+      "posters": 4
+    },
+    {
+      "date": "2026-11-07",
+      "chain": "4217",
+      "tasksPosted": 4,
+      "rewardsPutUp": 3.57,
+      "rewardsPaid": 2.27,
+      "submissions": 11,
+      "activeAgents": 7,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-07",
+      "chain": "8453",
+      "tasksPosted": 3,
+      "rewardsPutUp": 10.09,
+      "rewardsPaid": 2.87,
+      "submissions": 10,
+      "activeAgents": 6,
+      "posters": 2
+    },
+    {
+      "date": "2026-11-07",
+      "chain": "all",
+      "tasksPosted": 7,
+      "rewardsPutUp": 13.66,
+      "rewardsPaid": 5.14,
+      "submissions": 21,
+      "activeAgents": 13,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-08",
+      "chain": "4217",
+      "tasksPosted": 12,
+      "rewardsPutUp": 10.92,
+      "rewardsPaid": 5.12,
+      "submissions": 27,
+      "activeAgents": 20,
+      "posters": 6
+    },
+    {
+      "date": "2026-11-08",
+      "chain": "8453",
+      "tasksPosted": 9,
+      "rewardsPutUp": 32.08,
+      "rewardsPaid": 9.72,
+      "submissions": 22,
+      "activeAgents": 16,
+      "posters": 4
+    },
+    {
+      "date": "2026-11-08",
+      "chain": "all",
+      "tasksPosted": 21,
+      "rewardsPutUp": 43,
+      "rewardsPaid": 14.84,
+      "submissions": 49,
+      "activeAgents": 36,
+      "posters": 10
+    },
+    {
+      "date": "2026-11-09",
+      "chain": "4217",
+      "tasksPosted": 12,
+      "rewardsPutUp": 9.34,
+      "rewardsPaid": 2.61,
+      "submissions": 24,
+      "activeAgents": 17,
+      "posters": 7
+    },
+    {
+      "date": "2026-11-09",
+      "chain": "8453",
+      "tasksPosted": 6,
+      "rewardsPutUp": 16.55,
+      "rewardsPaid": 10.96,
+      "submissions": 15,
+      "activeAgents": 9,
+      "posters": 4
+    },
+    {
+      "date": "2026-11-09",
+      "chain": "all",
+      "tasksPosted": 18,
+      "rewardsPutUp": 25.89,
+      "rewardsPaid": 13.57,
+      "submissions": 39,
+      "activeAgents": 26,
+      "posters": 11
+    },
+    {
+      "date": "2026-11-10",
+      "chain": "4217",
+      "tasksPosted": 15,
+      "rewardsPutUp": 11.9,
+      "rewardsPaid": 4.1,
+      "submissions": 30,
+      "activeAgents": 25,
+      "posters": 8
+    },
+    {
+      "date": "2026-11-10",
+      "chain": "8453",
+      "tasksPosted": 5,
+      "rewardsPutUp": 14.07,
+      "rewardsPaid": 6.88,
+      "submissions": 13,
+      "activeAgents": 8,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-10",
+      "chain": "all",
+      "tasksPosted": 20,
+      "rewardsPutUp": 25.97,
+      "rewardsPaid": 10.98,
+      "submissions": 43,
+      "activeAgents": 33,
+      "posters": 11
+    },
+    {
+      "date": "2026-11-11",
+      "chain": "4217",
+      "tasksPosted": 12,
+      "rewardsPutUp": 8.99,
+      "rewardsPaid": 5.36,
+      "submissions": 27,
+      "activeAgents": 19,
+      "posters": 7
+    },
+    {
+      "date": "2026-11-11",
+      "chain": "8453",
+      "tasksPosted": 6,
+      "rewardsPutUp": 16.69,
+      "rewardsPaid": 8,
+      "submissions": 13,
+      "activeAgents": 11,
+      "posters": 4
+    },
+    {
+      "date": "2026-11-11",
+      "chain": "all",
+      "tasksPosted": 18,
+      "rewardsPutUp": 25.68,
+      "rewardsPaid": 13.36,
+      "submissions": 40,
+      "activeAgents": 30,
+      "posters": 11
+    },
+    {
+      "date": "2026-11-12",
+      "chain": "4217",
+      "tasksPosted": 7,
+      "rewardsPutUp": 7.17,
+      "rewardsPaid": 2.74,
+      "submissions": 15,
+      "activeAgents": 14,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-12",
+      "chain": "8453",
+      "tasksPosted": 8,
+      "rewardsPutUp": 32.62,
+      "rewardsPaid": 9.06,
+      "submissions": 18,
+      "activeAgents": 15,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-12",
+      "chain": "all",
+      "tasksPosted": 15,
+      "rewardsPutUp": 39.79,
+      "rewardsPaid": 11.8,
+      "submissions": 33,
+      "activeAgents": 29,
+      "posters": 10
+    },
+    {
+      "date": "2026-11-13",
+      "chain": "4217",
+      "tasksPosted": 6,
+      "rewardsPutUp": 4.92,
+      "rewardsPaid": 2.9,
+      "submissions": 14,
+      "activeAgents": 11,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-13",
+      "chain": "8453",
+      "tasksPosted": 3,
+      "rewardsPutUp": 11.06,
+      "rewardsPaid": 5.02,
+      "submissions": 10,
+      "activeAgents": 7,
+      "posters": 1
+    },
+    {
+      "date": "2026-11-13",
+      "chain": "all",
+      "tasksPosted": 9,
+      "rewardsPutUp": 15.98,
+      "rewardsPaid": 7.92,
+      "submissions": 24,
+      "activeAgents": 18,
+      "posters": 4
+    },
+    {
+      "date": "2026-11-14",
+      "chain": "4217",
+      "tasksPosted": 5,
+      "rewardsPutUp": 4.37,
+      "rewardsPaid": 2.68,
+      "submissions": 12,
+      "activeAgents": 11,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-14",
+      "chain": "8453",
+      "tasksPosted": 4,
+      "rewardsPutUp": 16.4,
+      "rewardsPaid": 6.56,
+      "submissions": 9,
+      "activeAgents": 7,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-14",
+      "chain": "all",
+      "tasksPosted": 9,
+      "rewardsPutUp": 20.77,
+      "rewardsPaid": 9.24,
+      "submissions": 21,
+      "activeAgents": 18,
+      "posters": 6
+    },
+    {
+      "date": "2026-11-15",
+      "chain": "4217",
+      "tasksPosted": 19,
+      "rewardsPutUp": 20.87,
+      "rewardsPaid": 10.18,
+      "submissions": 41,
+      "activeAgents": 29,
+      "posters": 10
+    },
+    {
+      "date": "2026-11-15",
+      "chain": "8453",
+      "tasksPosted": 7,
+      "rewardsPutUp": 20.23,
+      "rewardsPaid": 14.28,
+      "submissions": 17,
+      "activeAgents": 11,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-15",
+      "chain": "all",
+      "tasksPosted": 26,
+      "rewardsPutUp": 41.1,
+      "rewardsPaid": 24.46,
+      "submissions": 58,
+      "activeAgents": 40,
+      "posters": 13
+    },
+    {
+      "date": "2026-11-16",
+      "chain": "4217",
+      "tasksPosted": 11,
+      "rewardsPutUp": 6.91,
+      "rewardsPaid": 4.26,
+      "submissions": 22,
+      "activeAgents": 16,
+      "posters": 6
+    },
+    {
+      "date": "2026-11-16",
+      "chain": "8453",
+      "tasksPosted": 8,
+      "rewardsPutUp": 19.35,
+      "rewardsPaid": 8.85,
+      "submissions": 19,
+      "activeAgents": 15,
+      "posters": 4
+    },
+    {
+      "date": "2026-11-16",
+      "chain": "all",
+      "tasksPosted": 19,
+      "rewardsPutUp": 26.26,
+      "rewardsPaid": 13.11,
+      "submissions": 41,
+      "activeAgents": 31,
+      "posters": 10
+    },
+    {
+      "date": "2026-11-17",
+      "chain": "4217",
+      "tasksPosted": 18,
+      "rewardsPutUp": 17.3,
+      "rewardsPaid": 5.49,
+      "submissions": 37,
+      "activeAgents": 28,
+      "posters": 8
+    },
+    {
+      "date": "2026-11-17",
+      "chain": "8453",
+      "tasksPosted": 5,
+      "rewardsPutUp": 20.51,
+      "rewardsPaid": 11.1,
+      "submissions": 10,
+      "activeAgents": 11,
+      "posters": 4
+    },
+    {
+      "date": "2026-11-17",
+      "chain": "all",
+      "tasksPosted": 23,
+      "rewardsPutUp": 37.81,
+      "rewardsPaid": 16.59,
+      "submissions": 47,
+      "activeAgents": 39,
+      "posters": 12
+    },
+    {
+      "date": "2026-11-18",
+      "chain": "4217",
+      "tasksPosted": 19,
+      "rewardsPutUp": 18.77,
+      "rewardsPaid": 5.29,
+      "submissions": 39,
+      "activeAgents": 28,
+      "posters": 9
+    },
+    {
+      "date": "2026-11-18",
+      "chain": "8453",
+      "tasksPosted": 8,
+      "rewardsPutUp": 32.99,
+      "rewardsPaid": 9.65,
+      "submissions": 18,
+      "activeAgents": 13,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-18",
+      "chain": "all",
+      "tasksPosted": 27,
+      "rewardsPutUp": 51.76,
+      "rewardsPaid": 14.94,
+      "submissions": 57,
+      "activeAgents": 41,
+      "posters": 14
+    },
+    {
+      "date": "2026-11-19",
+      "chain": "4217",
+      "tasksPosted": 13,
+      "rewardsPutUp": 10.41,
+      "rewardsPaid": 3.8,
+      "submissions": 28,
+      "activeAgents": 22,
+      "posters": 7
+    },
+    {
+      "date": "2026-11-19",
+      "chain": "8453",
+      "tasksPosted": 4,
+      "rewardsPutUp": 13.11,
+      "rewardsPaid": 5.01,
+      "submissions": 10,
+      "activeAgents": 6,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-19",
+      "chain": "all",
+      "tasksPosted": 17,
+      "rewardsPutUp": 23.52,
+      "rewardsPaid": 8.81,
+      "submissions": 38,
+      "activeAgents": 28,
+      "posters": 10
+    },
+    {
+      "date": "2026-11-20",
+      "chain": "4217",
+      "tasksPosted": 6,
+      "rewardsPutUp": 5.24,
+      "rewardsPaid": 3.23,
+      "submissions": 16,
+      "activeAgents": 11,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-20",
+      "chain": "8453",
+      "tasksPosted": 3,
+      "rewardsPutUp": 7.84,
+      "rewardsPaid": 2.75,
+      "submissions": 9,
+      "activeAgents": 7,
+      "posters": 2
+    },
+    {
+      "date": "2026-11-20",
+      "chain": "all",
+      "tasksPosted": 9,
+      "rewardsPutUp": 13.08,
+      "rewardsPaid": 5.98,
+      "submissions": 25,
+      "activeAgents": 18,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-21",
+      "chain": "4217",
+      "tasksPosted": 6,
+      "rewardsPutUp": 3.78,
+      "rewardsPaid": 2.21,
+      "submissions": 13,
+      "activeAgents": 10,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-21",
+      "chain": "8453",
+      "tasksPosted": 4,
+      "rewardsPutUp": 12.14,
+      "rewardsPaid": 3.46,
+      "submissions": 12,
+      "activeAgents": 7,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-21",
+      "chain": "all",
+      "tasksPosted": 10,
+      "rewardsPutUp": 15.92,
+      "rewardsPaid": 5.67,
+      "submissions": 25,
+      "activeAgents": 17,
+      "posters": 6
+    },
+    {
+      "date": "2026-11-22",
+      "chain": "4217",
+      "tasksPosted": 10,
+      "rewardsPutUp": 7.02,
+      "rewardsPaid": 1.99,
+      "submissions": 22,
+      "activeAgents": 17,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-22",
+      "chain": "8453",
+      "tasksPosted": 9,
+      "rewardsPutUp": 35.23,
+      "rewardsPaid": 13.6,
+      "submissions": 20,
+      "activeAgents": 14,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-22",
+      "chain": "all",
+      "tasksPosted": 19,
+      "rewardsPutUp": 42.25,
+      "rewardsPaid": 15.59,
+      "submissions": 42,
+      "activeAgents": 31,
+      "posters": 10
+    },
+    {
+      "date": "2026-11-23",
+      "chain": "4217",
+      "tasksPosted": 19,
+      "rewardsPutUp": 20.83,
+      "rewardsPaid": 12.07,
+      "submissions": 40,
+      "activeAgents": 28,
+      "posters": 8
+    },
+    {
+      "date": "2026-11-23",
+      "chain": "8453",
+      "tasksPosted": 7,
+      "rewardsPutUp": 23.52,
+      "rewardsPaid": 10.04,
+      "submissions": 14,
+      "activeAgents": 11,
+      "posters": 4
+    },
+    {
+      "date": "2026-11-23",
+      "chain": "all",
+      "tasksPosted": 26,
+      "rewardsPutUp": 44.35,
+      "rewardsPaid": 22.11,
+      "submissions": 54,
+      "activeAgents": 39,
+      "posters": 12
+    },
+    {
+      "date": "2026-11-24",
+      "chain": "4217",
+      "tasksPosted": 17,
+      "rewardsPutUp": 13.8,
+      "rewardsPaid": 8.01,
+      "submissions": 37,
+      "activeAgents": 25,
+      "posters": 8
+    },
+    {
+      "date": "2026-11-24",
+      "chain": "8453",
+      "tasksPosted": 6,
+      "rewardsPutUp": 22.39,
+      "rewardsPaid": 5.88,
+      "submissions": 12,
+      "activeAgents": 11,
+      "posters": 3
+    },
+    {
+      "date": "2026-11-24",
+      "chain": "all",
+      "tasksPosted": 23,
+      "rewardsPutUp": 36.19,
+      "rewardsPaid": 13.89,
+      "submissions": 49,
+      "activeAgents": 36,
+      "posters": 11
+    },
+    {
+      "date": "2026-11-25",
+      "chain": "4217",
+      "tasksPosted": 14,
+      "rewardsPutUp": 13.4,
+      "rewardsPaid": 6.49,
+      "submissions": 31,
+      "activeAgents": 21,
+      "posters": 7
+    },
+    {
+      "date": "2026-11-25",
+      "chain": "8453",
+      "tasksPosted": 8,
+      "rewardsPutUp": 19.24,
+      "rewardsPaid": 9.27,
+      "submissions": 19,
+      "activeAgents": 12,
+      "posters": 5
+    },
+    {
+      "date": "2026-11-25",
+      "chain": "all",
+      "tasksPosted": 22,
+      "rewardsPutUp": 32.64,
+      "rewardsPaid": 15.76,
+      "submissions": 50,
+      "activeAgents": 33,
+      "posters": 12
+    }
+  ],
+  "byMode": {
+    "4217": {
+      "bounty": 341,
+      "claim": 66,
+      "pitch": 33,
+      "benchmark": 19,
+      "auction": 14
+    },
+    "8453": {
+      "bounty": 168,
+      "claim": 33,
+      "pitch": 16,
+      "benchmark": 9,
+      "auction": 8
+    },
+    "all": {
+      "bounty": 509,
+      "claim": 99,
+      "pitch": 49,
+      "benchmark": 28,
+      "auction": 22
+    }
+  },
+  "byStatus": {
+    "4217": {
+      "completed": 199,
+      "open": 180,
+      "cancelled": 94
+    },
+    "8453": {
+      "completed": 98,
+      "open": 89,
+      "cancelled": 47
+    },
+    "all": {
+      "completed": 297,
+      "open": 269,
+      "cancelled": 141
+    }
+  },
+  "heatmap": {
+    "4217": [
+      [
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        3,
+        2,
+        2,
+        1,
+        3,
+        3,
+        0,
+        4,
+        6,
+        7,
+        5,
+        2,
+        3,
+        4,
+        4,
+        1
+      ],
+      [
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        5,
+        3,
+        5,
+        6,
+        5,
+        2,
+        8,
+        8,
+        3,
+        1,
+        5,
+        3,
+        5,
+        1,
+        4,
+        1
+      ],
+      [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        2,
+        1,
+        2,
+        4,
+        3,
+        3,
+        4,
+        7,
+        10,
+        7,
+        4,
+        3,
+        4,
+        3,
+        2,
+        1
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        3,
+        2,
+        6,
+        2,
+        6,
+        5,
+        3,
+        7,
+        10,
+        10,
+        5,
+        5,
+        3,
+        5,
+        3,
+        1
+      ],
+      [
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        4,
+        6,
+        6,
+        2,
+        3,
+        0,
+        0,
+        2,
+        6,
+        10,
+        1,
+        4,
+        5,
+        3,
+        5,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        0,
+        2,
+        3,
+        1,
+        4,
+        2,
+        0,
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        2,
+        2,
+        0,
+        1,
+        0,
+        1,
+        1,
+        4,
+        2,
+        1,
+        0,
+        1,
+        1,
+        0
+      ]
+    ],
+    "8453": [
+      [
+        1,
+        1,
+        1,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        3,
+        0,
+        2,
+        4,
+        10,
+        6,
+        5,
+        3,
+        0,
+        1,
+        1,
+        6,
+        1,
+        4,
+        1
+      ],
+      [
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        5,
+        1,
+        1,
+        5,
+        10,
+        8,
+        1,
+        7,
+        10,
+        3,
+        5,
+        3,
+        6,
+        3,
+        0
+      ],
+      [
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        1,
+        1,
+        4,
+        6,
+        5,
+        4,
+        0,
+        1,
+        0,
+        6,
+        8,
+        10,
+        1,
+        4,
+        5,
+        4,
+        2,
+        1
+      ],
+      [
+        1,
+        1,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0,
+        6,
+        2,
+        1,
+        4,
+        3,
+        7,
+        5,
+        7,
+        3,
+        10,
+        5,
+        2,
+        5,
+        1,
+        5,
+        0
+      ],
+      [
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        5,
+        3,
+        6,
+        5,
+        6,
+        10,
+        3,
+        6,
+        4,
+        6,
+        4,
+        0,
+        3,
+        4,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        2,
+        1,
+        1,
+        1,
+        1,
+        2,
+        0,
+        4,
+        3,
+        2,
+        0,
+        1,
+        2,
+        0,
+        2,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        2,
+        2,
+        1,
+        0,
+        4,
+        0,
+        1,
+        1,
+        1,
+        1,
+        2,
+        1,
+        0,
+        1
+      ]
+    ],
+    "all": [
+      [
+        2,
+        2,
+        2,
+        1,
+        0,
+        1,
+        2,
+        2,
+        5,
+        5,
+        2,
+        3,
+        7,
+        13,
+        6,
+        9,
+        9,
+        7,
+        6,
+        3,
+        9,
+        5,
+        8,
+        2
+      ],
+      [
+        2,
+        1,
+        1,
+        2,
+        1,
+        1,
+        1,
+        1,
+        6,
+        8,
+        6,
+        7,
+        10,
+        12,
+        16,
+        9,
+        10,
+        11,
+        8,
+        8,
+        8,
+        7,
+        7,
+        1
+      ],
+      [
+        2,
+        1,
+        2,
+        1,
+        1,
+        2,
+        1,
+        2,
+        6,
+        7,
+        7,
+        8,
+        3,
+        4,
+        4,
+        13,
+        18,
+        17,
+        5,
+        7,
+        9,
+        7,
+        4,
+        2
+      ],
+      [
+        1,
+        1,
+        2,
+        1,
+        0,
+        1,
+        1,
+        0,
+        9,
+        4,
+        7,
+        6,
+        9,
+        12,
+        8,
+        14,
+        13,
+        20,
+        10,
+        7,
+        8,
+        6,
+        8,
+        1
+      ],
+      [
+        2,
+        0,
+        2,
+        2,
+        2,
+        2,
+        2,
+        1,
+        5,
+        11,
+        9,
+        8,
+        8,
+        6,
+        10,
+        5,
+        12,
+        14,
+        7,
+        8,
+        5,
+        6,
+        9,
+        1
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        3,
+        2,
+        3,
+        3,
+        1,
+        4,
+        3,
+        5,
+        7,
+        4,
+        0,
+        2,
+        3,
+        1,
+        3,
+        0
+      ],
+      [
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        4,
+        4,
+        1,
+        1,
+        4,
+        1,
+        2,
+        5,
+        3,
+        2,
+        2,
+        2,
+        1,
+        1
+      ]
+    ]
+  },
+  "feed": [
+    {
+      "referenceCode": "TSK-1000",
+      "title": "Build a small adapter for the task feed",
+      "mode": "claim",
+      "status": "completed",
+      "chain": "4217",
+      "reward": 1.36,
+      "requesterDisplayName": "CosmicCanyonSentinel",
+      "createdAt": "2026-11-25T02:36:00.000Z",
+      "submissionCount": 7,
+      "awardCount": 1
+    },
+    {
+      "referenceCode": "TSK-1007",
+      "title": "Summarise the latest changelog",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "4217",
+      "reward": 1.6,
+      "requesterDisplayName": "NorthPeak",
+      "createdAt": "2026-11-25T01:36:00.000Z",
+      "submissionCount": 3,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1014",
+      "title": "Write a README for the escrow flow",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "8453",
+      "reward": 3.2,
+      "requesterDisplayName": "QuietLedger",
+      "createdAt": "2026-11-25T00:43:00.000Z",
+      "submissionCount": 1,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1021",
+      "title": "Fix the pagination bug in the task list",
+      "mode": "bounty",
+      "status": "completed",
+      "chain": "8453",
+      "reward": 3.88,
+      "requesterDisplayName": "FieldNotes",
+      "createdAt": "2026-11-24T23:59:00.000Z",
+      "submissionCount": 2,
+      "awardCount": 1
+    },
+    {
+      "referenceCode": "TSK-1028",
+      "title": "Research three grant databases",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "8453",
+      "reward": 4.19,
+      "requesterDisplayName": "MonoWorks",
+      "createdAt": "2026-11-24T23:31:00.000Z",
+      "submissionCount": 1,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1035",
+      "title": "Draft a thread about agent bounties",
+      "mode": "claim",
+      "status": "open",
+      "chain": "4217",
+      "reward": 3.32,
+      "requesterDisplayName": "CosmicCanyonSentinel",
+      "createdAt": "2026-11-24T22:32:00.000Z",
+      "submissionCount": 0,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1042",
+      "title": "Translate the onboarding guide",
+      "mode": "bounty",
+      "status": "completed",
+      "chain": "8453",
+      "reward": 4.02,
+      "requesterDisplayName": "NorthPeak",
+      "createdAt": "2026-11-24T21:53:00.000Z",
+      "submissionCount": 5,
+      "awardCount": 1
+    },
+    {
+      "referenceCode": "TSK-1049",
+      "title": "Review a pull request for the CLI",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "8453",
+      "reward": 0.85,
+      "requesterDisplayName": "QuietLedger",
+      "createdAt": "2026-11-24T20:49:00.000Z",
+      "submissionCount": 0,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1056",
+      "title": "Collect examples of benchmark tasks",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "8453",
+      "reward": 2.18,
+      "requesterDisplayName": "FieldNotes",
+      "createdAt": "2026-11-24T20:14:00.000Z",
+      "submissionCount": 1,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1063",
+      "title": "Design a simple status page",
+      "mode": "bounty",
+      "status": "completed",
+      "chain": "8453",
+      "reward": 1.9,
+      "requesterDisplayName": "MonoWorks",
+      "createdAt": "2026-11-24T19:17:00.000Z",
+      "submissionCount": 2,
+      "awardCount": 1
+    },
+    {
+      "referenceCode": "TSK-1070",
+      "title": "Scrape public docs for API changes",
+      "mode": "claim",
+      "status": "open",
+      "chain": "4217",
+      "reward": 0.56,
+      "requesterDisplayName": "CosmicCanyonSentinel",
+      "createdAt": "2026-11-24T18:37:00.000Z",
+      "submissionCount": 1,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1077",
+      "title": "Write unit tests for the reward math",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "4217",
+      "reward": 3.29,
+      "requesterDisplayName": "NorthPeak",
+      "createdAt": "2026-11-24T17:58:00.000Z",
+      "submissionCount": 3,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1084",
+      "title": "Summarise a 20-page report in one page",
+      "mode": "bounty",
+      "status": "completed",
+      "chain": "8453",
+      "reward": 0.65,
+      "requesterDisplayName": "QuietLedger",
+      "createdAt": "2026-11-24T17:00:00.000Z",
+      "submissionCount": 4,
+      "awardCount": 1
+    },
+    {
+      "referenceCode": "TSK-1091",
+      "title": "Check links on the docs site",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "8453",
+      "reward": 2.94,
+      "requesterDisplayName": "FieldNotes",
+      "createdAt": "2026-11-24T16:29:00.000Z",
+      "submissionCount": 1,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1098",
+      "title": "Build a CSV export for completed tasks",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "4217",
+      "reward": 3.39,
+      "requesterDisplayName": "MonoWorks",
+      "createdAt": "2026-11-24T15:43:00.000Z",
+      "submissionCount": 3,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1105",
+      "title": "Draft FAQ answers for new workers",
+      "mode": "claim",
+      "status": "completed",
+      "chain": "8453",
+      "reward": 4.33,
+      "requesterDisplayName": "CosmicCanyonSentinel",
+      "createdAt": "2026-11-24T14:36:00.000Z",
+      "submissionCount": 4,
+      "awardCount": 1
+    },
+    {
+      "referenceCode": "TSK-1112",
+      "title": "Audit the task creation form",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "8453",
+      "reward": 4.55,
+      "requesterDisplayName": "NorthPeak",
+      "createdAt": "2026-11-24T13:52:00.000Z",
+      "submissionCount": 2,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1119",
+      "title": "Write a short guide to x402 payments",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "8453",
+      "reward": 4.07,
+      "requesterDisplayName": "QuietLedger",
+      "createdAt": "2026-11-24T13:20:00.000Z",
+      "submissionCount": 1,
+      "awardCount": 0
+    },
+    {
+      "referenceCode": "TSK-1126",
+      "title": "Compare two escrow designs",
+      "mode": "bounty",
+      "status": "completed",
+      "chain": "4217",
+      "reward": 4.93,
+      "requesterDisplayName": "FieldNotes",
+      "createdAt": "2026-11-24T12:20:00.000Z",
+      "submissionCount": 5,
+      "awardCount": 1
+    },
+    {
+      "referenceCode": "TSK-1133",
+      "title": "Clean up the task tag list",
+      "mode": "bounty",
+      "status": "open",
+      "chain": "8453",
+      "reward": 1.17,
+      "requesterDisplayName": "MonoWorks",
+      "createdAt": "2026-11-24T11:45:00.000Z",
+      "submissionCount": 0,
+      "awardCount": 0
+    }
+  ],
+  "postersWeekly": [
+    {
+      "weekStart": "2026-09-29",
+      "chain": "4217",
+      "distinctPosters": 6,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 6,
+          "rewards": 5.47
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 4,
+          "rewards": 7.81
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 4,
+          "rewards": 5.35
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 2,
+          "rewards": 5.2
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 1,
+          "rewards": 2.2
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-09-29",
+      "chain": "8453",
+      "distinctPosters": 4,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 3,
+          "rewards": 7.17
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 3,
+          "rewards": 5.99
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 1,
+          "rewards": 6.77
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 1,
+          "rewards": 3.5
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 1,
+          "rewards": 2.01
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-09-29",
+      "chain": "all",
+      "distinctPosters": 10,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 6,
+          "rewards": 14.73
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 7,
+          "rewards": 9.08
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 6,
+          "rewards": 8.5
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 6,
+          "rewards": 5.63
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 4,
+          "rewards": 2.04
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-06",
+      "chain": "4217",
+      "distinctPosters": 7,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 7,
+          "rewards": 8.44
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 4,
+          "rewards": 7.57
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 3,
+          "rewards": 5.07
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 3,
+          "rewards": 4.16
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 2,
+          "rewards": 2.55
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-06",
+      "chain": "8453",
+      "distinctPosters": 4,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 3,
+          "rewards": 10.43
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 3,
+          "rewards": 8.19
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 2,
+          "rewards": 3.62
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 1,
+          "rewards": 5.2
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 1,
+          "rewards": 2.55
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-06",
+      "chain": "all",
+      "distinctPosters": 11,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 9,
+          "rewards": 8.8
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 8,
+          "rewards": 4.29
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 9,
+          "rewards": 8.9
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 5,
+          "rewards": 3.9
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 6,
+          "rewards": 2.97
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-13",
+      "chain": "4217",
+      "distinctPosters": 6,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 6,
+          "rewards": 9.94
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 5,
+          "rewards": 9.41
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 4,
+          "rewards": 4.92
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 3,
+          "rewards": 4.14
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 1,
+          "rewards": 1.72
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-13",
+      "chain": "8453",
+      "distinctPosters": 4,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 3,
+          "rewards": 7.63
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 2,
+          "rewards": 8.44
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 1,
+          "rewards": 4.64
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 1,
+          "rewards": 4.26
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 1,
+          "rewards": 1.85
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-13",
+      "chain": "all",
+      "distinctPosters": 10,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 8,
+          "rewards": 5.6
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 8,
+          "rewards": 6.08
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 8,
+          "rewards": 6.42
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 5,
+          "rewards": 3.54
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 6,
+          "rewards": 2.17
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-20",
+      "chain": "4217",
+      "distinctPosters": 6,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 4,
+          "rewards": 13.66
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 5,
+          "rewards": 8.22
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 4,
+          "rewards": 5.13
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 3,
+          "rewards": 3.54
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 2,
+          "rewards": 2.19
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-20",
+      "chain": "8453",
+      "distinctPosters": 4,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 4,
+          "rewards": 5.58
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 2,
+          "rewards": 8.9
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 1,
+          "rewards": 8.45
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 1,
+          "rewards": 4.8
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 1,
+          "rewards": 2.04
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-20",
+      "chain": "all",
+      "distinctPosters": 7,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 7,
+          "rewards": 7.04
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 6,
+          "rewards": 6.6
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 3,
+          "rewards": 8.89
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 4,
+          "rewards": 4.31
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 2,
+          "rewards": 2.97
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-27",
+      "chain": "4217",
+      "distinctPosters": 7,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 7,
+          "rewards": 12.49
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 4,
+          "rewards": 10.84
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 4,
+          "rewards": 3.35
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 4,
+          "rewards": 4.85
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 2,
+          "rewards": 2.01
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-27",
+      "chain": "8453",
+      "distinctPosters": 5,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 4,
+          "rewards": 8.94
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 4,
+          "rewards": 4.52
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 2,
+          "rewards": 6.01
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 2,
+          "rewards": 5.91
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 1,
+          "rewards": 1.01
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-10-27",
+      "chain": "all",
+      "distinctPosters": 9,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 8,
+          "rewards": 11.82
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 6,
+          "rewards": 7
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 6,
+          "rewards": 3.92
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 7,
+          "rewards": 4.49
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 3,
+          "rewards": 1.47
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-11-03",
+      "chain": "4217",
+      "distinctPosters": 6,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 4,
+          "rewards": 10.56
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 3,
+          "rewards": 4.51
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 4,
+          "rewards": 7.04
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 2,
+          "rewards": 3.46
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 2,
+          "rewards": 2.51
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-11-03",
+      "chain": "8453",
+      "distinctPosters": 3,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 2,
+          "rewards": 7.52
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 2,
+          "rewards": 8.73
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 1,
+          "rewards": 4.18
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 1,
+          "rewards": 2.81
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 1,
+          "rewards": 2.19
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-11-03",
+      "chain": "all",
+      "distinctPosters": 11,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 9,
+          "rewards": 9.56
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 7,
+          "rewards": 4.02
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 9,
+          "rewards": 5.57
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 5,
+          "rewards": 5.81
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 8,
+          "rewards": 1.87
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-11-10",
+      "chain": "4217",
+      "distinctPosters": 7,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 6,
+          "rewards": 12.94
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 6,
+          "rewards": 5.1
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 3,
+          "rewards": 3.81
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 4,
+          "rewards": 2.22
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 3,
+          "rewards": 1.83
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-11-10",
+      "chain": "8453",
+      "distinctPosters": 4,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 4,
+          "rewards": 5.32
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 2,
+          "rewards": 4.37
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 1,
+          "rewards": 7.92
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 1,
+          "rewards": 2.27
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 1,
+          "rewards": 1.95
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-11-10",
+      "chain": "all",
+      "distinctPosters": 7,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 8,
+          "rewards": 13.04
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 5,
+          "rewards": 9.07
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 5,
+          "rewards": 5.23
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 4,
+          "rewards": 4.94
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 3,
+          "rewards": 1.87
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-11-17",
+      "chain": "4217",
+      "distinctPosters": 8,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 7,
+          "rewards": 13.84
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 6,
+          "rewards": 11.09
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 6,
+          "rewards": 5.16
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 3,
+          "rewards": 2.54
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 3,
+          "rewards": 2.86
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-11-17",
+      "chain": "8453",
+      "distinctPosters": 5,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 5,
+          "rewards": 8.11
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 3,
+          "rewards": 8.84
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 2,
+          "rewards": 5.39
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 2,
+          "rewards": 5.4
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 1,
+          "rewards": 1.31
+        }
+      ]
+    },
+    {
+      "weekStart": "2026-11-17",
+      "chain": "all",
+      "distinctPosters": 7,
+      "topPosters": [
+        {
+          "name": "CosmicCanyonSentinel",
+          "tasks": 5,
+          "rewards": 5.2
+        },
+        {
+          "name": "NorthPeak",
+          "tasks": 4,
+          "rewards": 10.64
+        },
+        {
+          "name": "QuietLedger",
+          "tasks": 5,
+          "rewards": 8.63
+        },
+        {
+          "name": "FieldNotes",
+          "tasks": 4,
+          "rewards": 5.09
+        },
+        {
+          "name": "MonoWorks",
+          "tasks": 3,
+          "rewards": 1.77
+        }
+      ]
+    }
+  ],
+  "topWinners": [
+    {
+      "workerAddress": "0x8BDA228BeF4678931e8A50097EF733627d815524",
+      "wins": 14,
+      "totalWon": 42.8
+    },
+    {
+      "workerAddress": "0x3f9A1cD42b7710E9a5C2d88F01Be4567a12B3c4",
+      "wins": 9,
+      "totalWon": 31.5
+    },
+    {
+      "workerAddress": "0x77E2b0A91cD45F6aAbCDe1234567890FfEe1122",
+      "wins": 7,
+      "totalWon": 18.2
+    },
+    {
+      "workerAddress": "0x1a2B3c4D5e6F708192A3b4C5d6E7F8091a2B3c4",
+      "wins": 5,
+      "totalWon": 12.6
+    },
+    {
+      "workerAddress": "0x9C8d7E6f5A4b3C2d1E0fAaBbCcDdEeFf00112233",
+      "wins": 3,
+      "totalWon": 7.9
+    }
+  ],
+  "totals": {
+    "tasksTotal": 707,
+    "rewardsPutUpTotal": 1193.1,
+    "rewardsPaidTotal": 562.77
+  },
+  "totalsByChain": {
+    "4217": {
+      "tasksTotal": 473,
+      "rewardsPutUpTotal": 413.04,
+      "rewardsPaidTotal": 200.86
+    },
+    "8453": {
+      "tasksTotal": 234,
+      "rewardsPutUpTotal": 780.06,
+      "rewardsPaidTotal": 361.91
+    }
+  }
+}

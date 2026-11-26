@@ -1,3 +1,5 @@
+REVISION — this submission supersedes submission d12f673e-94bd-45da-9ea5-b98d2bd18e36 (26 Nov 2026). Same live URL, repo, stack and endpoints; what changed is R3c + R3d (26 Nov 2026): a "Right now" live-market panel, an 8-item "What stands out" (busiest hour + poster concentration), per-view share cards, per-figure source notes, and an honest platform-wide fallback for per-chain new-agents/settlements — plus R3d: a live swarm line under the title ("N entries circling M open tasks", computed from the live "Right now" figures) and the latest-tasks panel replaced by the 25 newest open tasks taking entries (newest first, reward + entry count each). Please judge this revision, not the earlier file.
+
 TaskMarket Visualizer — submission notes (bounty TSK-BRK611AN, $50 OUSD)
 ====================================================================
 
@@ -6,20 +8,44 @@ Repo:     https://github.com/27rangga/taskmarket-visualizer (public, MIT)
 
 What it is
 ----------
-A public, live dashboard of the TaskMarket marketplace: headline numbers,
+A public, live dashboard of the TaskMarket marketplace. It opens with a
+live swarm line under the title — "N entries circling M open tasks",
+computed from the live "Right now" figures, with a second line for money
+paid today and tasks closing in 24 hours — then the live market itself
+("Right now": open tasks taking entries, entries on them,
+tasks posted today, money paid today, tasks closing in 24 hours, and money
+on tasks past their deadline and still undecided), then headline numbers,
 daily series (active agents, tasks posted, rewards put up & paid) with a
 7d/30d/90d/all range switch, tasks by mode & by status, an activity heatmap,
 a live activity feed, both chains (Tempo 4217 OUSD / Base 8453 USDC), and
 distinct task posters per week — plus what stands out (completion rate,
-paid-out share, bounty share, busiest day) and the top 5 winners, plus a
-hero view of money flowing from poster to winner. No login, no wallet, no
-analytics.
+paid-out share, bounty share, busiest day, fate split completed/cancelled/
+expired, open tasks past expiry awaiting a decision, the busiest hour, and
+poster concentration: the biggest poster took 25% of tasks in the last 30
+days, 3 wallets posted half of everything) and the top 5 winners, plus a
+hero view of money flowing from poster to winner. Each view (right now,
+flow, day by day, heatmap, feed, posters) has its own shareable link
+(?view=rightnow, ?view=flow, ?view=daily, ?view=heatmap, ?view=feed,
+?view=posters) with a "Copy link" button — each link carries its own
+title and description when shared, and every figure on the page carries a
+short source note naming the endpoint it came from. The daily chart also
+plots new agents and settlements per day (official platform-wide
+time-series). When a chain tab is selected, those two series show the
+platform-wide series with an explicit "Platform-wide (all chains)" label
+— never zeros, never invented per-chain numbers. The feed is followed by
+the 25 newest open tasks taking entries (reward + entry count each,
+"Showing 25 of N open tasks taking entries right now"), newest first —
+only tasks whose submission window is still open, so the list is work
+a visitor can actually take. No login, no wallet, no analytics.
 
 Stack
 -----
 - Cloudflare Worker (ES module) + Workers KV + Workers Static Assets.
 - Frontend: hand-written HTML/CSS/JS, no framework, no chart library
-  (SVG charts drawn by hand). Total first-load local files ~45 KB.
+  (SVG charts drawn by hand). Total first-load local files ~72 KB
+  (index.html 27.493 B + styles.css 14.601 B + app.js 31.256 B =
+  73.350 B; was 69.253 B before R3d — the live swarm line, the
+  25-item open-tasks list and its styles).
 - Brand kit only: Instrument Serif / Inter Tight / Departure Mono;
   ground #12100E, panel #221E1A, magenta #E74079 as accent only.
   Lockup, share image (taskmarket-og-1200x630.png) and Departure Mono are
@@ -38,8 +64,10 @@ everything and serves it at /api/data (Cache-Control: public, max-age=300).
 - GET https://api.taskmarket.dev/api/market/stats (?chainId=4217|8453)
   (headline figures)
 - GET https://api.taskmarket.dev/api/tasks (cursor-paged, 100/page)
-  (per-chain figures, weekly posters, top winners; only returns tasks
-  since 5 Jul 2026)
+  (per-chain figures, weekly posters, top winners, "Right now" entries
+  and poster concentration; only returns tasks since 5 Jul 2026; the
+  25-item open-tasks list is built from the same task pages — open
+  tasks whose submission window is still open, newest first)
 
 Note: platform-wide figures now come from the official /api/stats/*
 endpoints (corrected 25 Nov 2026 ~05:00 WIB — the earlier note wrongly
@@ -48,9 +76,20 @@ are in METHOD.md and on the page itself (e.g. "rewards paid" for "all"
 is dated by settlement date; per-chain "rewards paid" is still dated by
 task creation; "daily active agents" is distinct participating addresses
 per day; headline "Open tasks" = open tasks whose submission window is
-still open; verified 25 Nov 2026 05:02 WIB, 12/13 sampled numbers exact
-vs the API, 1 small drift on the fast-moving heatmap — the live counts
-move over time, see the page).
+still open; "entries on open tasks" counts only tasks whose submission
+window is still open — open tasks past expiry are not counted, because
+they take no more entries; verified 25 Nov 2026 05:02 WIB, 12/13 sampled
+numbers exact vs the API, 1 small drift on the fast-moving heatmap — the
+live counts move over time, see the page). New 26 Nov 2026 (R3c): "Right
+now" live-market panel; "What stands out" grew from 6 to 8 items
+(busiest hour + poster concentration over the last 30 days); per-view
+share cards (?view=… with per-view title/description, old #/view links
+still work); a source note under every panel; per-chain
+new-agents/settlements now show the labelled platform-wide series
+instead of a dead end. Median time-to-decision is NOT shown — the API
+carries no task completion timestamp (completed tasks have no
+completedAt/resolvedAt), so it cannot be computed honestly; "awaiting
+decision" is shown instead.
 
 Refresh
 -------
@@ -71,14 +110,17 @@ KV namespace and put its id in wrangler.toml — see README.md.)
 Files
 -----
 - worker.js / aggregate.js — Worker + aggregation logic (single source).
-- wrangler.toml — name, KV, crons, assets.
-- public/ — index.html, styles.css, app.js (+ empty assets/ placeholders).
+- wrangler.toml — name, KV, crons, assets (run_worker_first: true, so the
+  Worker can rewrite share-card meta per view).
+- public/ — index.html, styles.css, app.js + assets/ berisi file brand
+  kit asli (DepartureMono-Regular.woff2 + lockup/mark/og PNG).
 - DATA-CONTRACT.md — exact /api/data JSON shape.
 - METHOD.md — method note shown on the page.
 - QA-CHECKLIST.md — QA gate: every Part 1 check verified with evidence.
-- test-pipeline.mjs / deploy.mjs / seed-kv.mjs — test / API deploy / KV seed.
+- test-pipeline.mjs / test-frontend.mjs / deploy.mjs / seed-kv.mjs —
+  aggregation test / DOM render test / API deploy / KV seed.
 
-QA (25 Nov 2026, see QA-CHECKLIST.md for evidence)
+QA (25–26 Nov 2026, see QA-CHECKLIST.md for evidence)
 --------------------------------------------------
 Part 1 (all must pass): hosted live 200; server-side fetch only
 (app.js fetches only "/api/data"); hourly cron + 15-min feed cron set and
@@ -86,13 +128,16 @@ OBSERVED ticking (feed ticks 20:15 UTC and 20:30 UTC advanced dataAsOf);
 cache max-age=300; "data as of" visible in 3 places + method note; 13
 sampled numbers checked against the API as of dataAsOf (12 exact, 1
 small drift on the fast-moving heatmap; slow counts match exactly); all minimum views present, plus "What stands
-out" (4 ratios) and "Top winners" (top 5); repo public MIT (19 files on
+out" (8 items) and "Top winners" (top 5); repo public MIT (25 files on
 main) + one-command deploy validated by `npx wrangler deploy --dry-run`
 from a fresh clone (exit 0, 14.86 KiB, bindings DATA + ASSETS — after
 fixing a real bug: wrangler.toml lacked `main` and `binding`); all
 brand/load/mobile/footer rules met (mobile 360px verified via headless
-screenshots, no horizontal scroll; page ~50.6 KB local files, each
-request <0.8 s, <3 s load). Chart x-labels fixed (last label was clipped
+screenshots, no horizontal scroll; 3 file lokal 69.253 B, tiap request
+utama biasanya 0,4–0,9 dtk dari VM — satu kali styles.css 0,91 dtk dan
+satu kali /api/data 0,86 dtk teramati 26 Nov, jadi klaim lama "tiap
+request <0,8 dtk" dikoreksi jadi "biasanya <1 dtk" — total first-load
+tetap <3 dtk). Chart x-labels fixed (last label was clipped
 to "11-2"); label count now adapts to chart width, verified no-overlap
 for all ranges at 360px.
 Part 2 self-assessment (perintah RANGGA 25 Nov 03:28 WIB: target 100%,
@@ -101,3 +146,62 @@ Shareability 5, Code/handover 5 — total 97/100, no 1s. Reliability stays
 4 (3-day stability cannot be proven before submit — site live since 24 Nov,
 proof complete ~27 Nov); Design/brand rose 4 → 5 on 25 Nov ~03:47 WIB
 (brand assets self-hosted in public/assets/, verified live HTTP 200).
+R2+R3 (26 Nov 2026, deployed + verified live): per-view hash links + copy buttons,
+newAgents/settlements metrics, 6-item "What stands out", awaitingDecision
+totals, latestTasks (10), expiryTime in compactTask + forced one-time
+backfill guard in worker.js. QA for R2+R3: node test-pipeline.mjs
+(checked new fields vs the API directly) + node verify-live.mjs after
+deploy; see coordinator notes for the numbers.
+Verifikasi ulang 26 Nov 2026 ~06:00–06:06 UTC (dataAsOf live
+2026-11-26T06:00:52Z): node verify-live.mjs 7/13 cocok persis, 6 drift
+kecil yang saling konsisten (completed +1, open −1, registered +2,
+openTasks −1, paid +$0,01–0,02 dalam ±5 menit — aktivitas nyata antara
+dataAsOf dan pengecekan); cek manual 5 keluarga: headline
+registeredWorkers 148.674 vs API 148.676 (−2), byStatus completed
+1.336 vs 1.338 (−2), byMode bounty 1.613 = 1.613, deret hari lengkap
+25 Nov tasksPosted 91 = 91 / activeAgents 149 = 149 / put up $109,28 =
+$109,28 / paid $103,27 = $103,27 / newAgents 47 = 47 / settlements 186
+= 186, heatmap 4 sel cocok persis (Senin jam 0: 670, Selasa jam 6:
+500, Rabu jam 12: 256, Minggu jam 23: 500; total 57.161 = 57.161),
+feed[0] task_submitted TSK-B4T9D2MD 05:59:04Z sama persis dengan
+activity-feed resmi. Repo di main kini 25 file (bukan 19 — klaim lama
+di QA-CHECKLIST sudah dikoreksi). Dry-run dari clone baru 26 Nov:
+exit 0, Total Upload 21,78 KiB / gzip 6,02 KiB, bindings env.DATA (KV)
++ env.ASSETS. Render headless 360px/1280px TIDAK bisa dijalankan dari
+VM ini (Chromium CLI tidak menghasilkan output; Puppeteer+pipe jalan
+tapi jaringan Chrome gagal — ERR_TUNNEL_CONNECTION_FAILED tanpa proxy,
+ERR_NO_SUPPORTED_PROXIES dengan proxy env); cek visual mobile harus
+manual di HP/browser.
+R3c (26 Nov 2026 ~14:00 WIB, deployed + verified live, dataAsOf
+2026-11-26T06:47:05Z): "Right now" live (75 open tasks taking entries,
+3.866 entries on them, 128 posted today, $17,89 paid today, 15 closing
+in 24h, $638,58 on 127 tasks past deadline — semua cocok hitungan
+independen dari API); konsentrasi poster (1.313 tugas / 222 poster
+30 hari, poster terbesar 24,9%, 3 wallet memposting 54,2%); 6 share
+card per view terverifikasi live (?view=flow/daily/heatmap/feed/
+posters/rightnow — judul + deskripsi og per view); node
+test-pipeline.mjs 35/35 cocok vs API langsung (termasuk 11 cek baru
+rightNow/concentration); node test-frontend.mjs 21/21 (stub DOM:
+fallback platform-wide, panel Right now, 8 insight, copy-link ?view=,
+scroll ?view=).
+R3d (26 Nov 2026 ~15:00 WIB, deployed + verified live, dataAsOf
+2026-11-26T08:00:45Z): live swarm line under the title ("3,889
+entries circling 80 open tasks" + "$18.16 paid today · 24 closing in
+24 hours", from rightNow — posted today 163, awaiting 127 tugas /
+$638,58) and the latest-tasks panel replaced by the 25 newest open
+tasks taking entries ("Showing 25 of 80", first TSK-TGG1Q7CJ
+07:56:00Z, all open + submission window open). Node
+test-pipeline.mjs 40/40 cocok vs API langsung (35 lama + 5 baru R3d);
+node test-frontend.mjs 25/25 (21 lama + 4 baru hero/daftar). Verifikasi
+ulang live: 6/13 cocok persis, 7 drift kecil yang saling konsisten
+(aktivitas nyata dalam 4 menit setelah dataAsOf); 5 spot-check
+independen (walk /api/tasks 1.800 tugas): openTasks 80 vs 77 (drift
+−3, dijelaskan 3 tugas diputuskan di jeda), openEntries 3.889 vs
+hitung independen 3.945 (+56 submission baru sejak dataAsOf; pada
+dataAsOf-nya sendiri test-pipeline 3.892 = 3.892 persis),
+registeredWorkers 148.692 vs 148.693, heatmap Jumat 02:00 = 788 event
+persis, feed[0] TSK-NJAXXSBP 08:00:11Z. Honest limit: the open-tasks
+list is an hourly snapshot like the rest of the page — small
+fast-moving tasks can be decided minutes after dataAsOf (7 of the 25
+were already completed ~5 minutes after dataAsOf); the page always
+shows "data as of" so the snapshot time is visible.

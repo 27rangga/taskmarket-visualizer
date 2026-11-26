@@ -116,6 +116,61 @@ const hmTotal = heatmap.cells.reduce((a, c) => a + c.count, 0);
 const hmAllTotal = data.heatmap.all.flat().reduce((a, b) => a + b, 0);
 checks.push(["heatmap.all total events", hmAllTotal, hmTotal]);
 checks.push(["feed items", data.feed.length, (feed.items || []).length]);
+// R3: field baru — newAgents/settlements dari time-series resmi, latestTasks 10 item,
+// awaitingDecision = tugas open dengan expiryTime < dataAsOf (dihitung ulang independen).
+checks.push([`daily.all[${lastTs.bucket}].newAgents`, lastDaily.newAgents, Number(lastTs.newAgents) || 0]);
+checks.push([`daily.all[${lastTs.bucket}].settlements`, lastDaily.settlements, Number(lastTs.settlements) || 0]);
+checks.push(["latestTasks length", data.latestTasks.length, 10]);
+const newestTask = [...tasks].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))[0];
+checks.push(["latestTasks[0].referenceCode", data.latestTasks[0].referenceCode, newestTask.referenceCode]);
+const expectAwaiting = tasks.filter((t) => t.status === "open" && t.expiryTime && t.expiryTime < data.dataAsOf).length;
+checks.push(["totals.awaitingDecision", data.totals.awaitingDecision, expectAwaiting]);
+for (const c of ["4217", "8453"]) {
+  const expectChain = tasks.filter((t) => t.chainId === c && t.status === "open" && t.expiryTime && t.expiryTime < data.dataAsOf).length;
+  checks.push([`totalsByChain[${c}].awaitingDecision`, data.totalsByChain[c].awaitingDecision, expectChain]);
+}
+const perChainRow = data.daily.find((d) => d.chain === "4217");
+checks.push(["daily.4217.newAgents null", perChainRow.newAgents, null]);
+checks.push(["daily.4217.settlements null", perChainRow.settlements, null]);
+// R3c: "Right now" + konsentrasi poster — hitung ulang independen dari task
+// mentah + time-series resmi + stats (bukan dari agregat itu sendiri).
+const rn = data.rightNow;
+const nowIso = data.dataAsOf;
+const todayStr = nowIso.slice(0, 10);
+const cutoff30 = new Date(new Date(nowIso).getTime() - 30 * 86400 * 1000).toISOString();
+const nowPlus24 = new Date(new Date(nowIso).getTime() + 86400 * 1000).toISOString();
+checks.push(["rightNow.openTasks", rn.openTasks, Number(statsAll.openTasks) || 0]);
+checks.push(["rightNow.openEntries", rn.openEntries, tasks.filter((t) => t.status === "open" && t.submissionWindowOpen).reduce((a, t) => a + t.submissionCount, 0)]);
+checks.push(["compactTask submissionWindowOpen ada", tasks.filter((t) => t.submissionWindowOpen !== undefined).length, tasks.length]);
+checks.push(["rightNow.postedToday", rn.postedToday, tasks.filter((t) => t.createdAt.slice(0, 10) === todayStr).length]);
+const todayBucket = timeSeries.find((r) => r.bucket === todayStr);
+checks.push(["rightNow.paidToday", rn.paidToday, todayBucket ? toDollars(todayBucket.paidVolume) : null]);
+checks.push(["rightNow.closing24h", rn.closing24h, tasks.filter((t) => t.status === "open" && t.expiryTime && t.expiryTime > nowIso && t.expiryTime <= nowPlus24).length]);
+checks.push(["rightNow.awaitingCount", rn.awaitingCount, expectAwaiting]);
+const expectAwaitingRewards = Math.round(tasks.filter((t) => t.status === "open" && t.expiryTime && t.expiryTime < nowIso).reduce((a, t) => a + toDollars(t.netReward), 0) * 100) / 100;
+checks.push(["rightNow.awaitingRewards", rn.awaitingRewards, expectAwaitingRewards]);
+const tasks30 = tasks.filter((t) => t.createdAt >= cutoff30 && t.requester);
+const pMap = new Map();
+for (const t of tasks30) pMap.set(t.requester, (pMap.get(t.requester) || 0) + 1);
+const pSorted = [...pMap.values()].sort((a, b) => b - a);
+checks.push(["concentration.tasks30d", data.concentration.tasks30d, tasks30.length]);
+checks.push(["concentration.posters30d", data.concentration.posters30d, pMap.size]);
+checks.push(["concentration.topShare", data.concentration.topShare, pSorted.length ? pSorted[0] / tasks30.length : null]);
+let halfAcc = 0, halfWant = null;
+for (let i = 0; i < pSorted.length; i++) { halfAcc += pSorted[i]; if (halfAcc >= tasks30.length / 2) { halfWant = i + 1; break; } }
+checks.push(["concentration.postersToHalf", data.concentration.postersToHalf, halfWant]);
+checks.push(["compactTask expiryTime ada", tasks.filter((t) => t.expiryTime).length > 0 ? 1 : 0, 1]);
+// R3d: openTasksList — 25 tugas open terbaru yang jendela submission-nya
+// masih terbuka (status open DAN submissionWindowOpen=true), urut createdAt desc.
+const expectOpen = [...tasks]
+  .filter((t) => t.status === "open" && t.submissionWindowOpen === true)
+  .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+const openSet = new Set(expectOpen.map((t) => t.referenceCode));
+checks.push(["openTasksList length", data.openTasksList.length, Math.min(25, expectOpen.length)]);
+checks.push(["openTasksList[0].referenceCode", data.openTasksList[0]?.referenceCode, expectOpen[0]?.referenceCode]);
+checks.push(["openTasksList semua open+windowOpen", data.openTasksList.filter((t) => openSet.has(t.referenceCode)).length, data.openTasksList.length]);
+checks.push(["openTasksList urut createdAt desc", data.openTasksList.every((t, i) => i === 0 || t.createdAt <= data.openTasksList[i - 1].createdAt) ? 1 : 0, 1]);
+checks.push(["openTasksList[0].submissionCount", data.openTasksList[0]?.submissionCount, expectOpen[0]?.submissionCount]);
 let fails = 0;
 for (const [name, got, want] of checks) {
   const ok = got === want;
@@ -137,5 +192,16 @@ console.log("\n== feed (2 item pertama) ==");
 console.log(JSON.stringify(data.feed.slice(0, 2), null, 2));
 console.log("\n== latestCompleted ==");
 console.log(JSON.stringify(data.latestCompleted, null, 2));
+console.log("\n== R3: awaitingDecision / latestTasks / newAgents+settlements ==");
+console.log("awaitingDecision totals:", data.totals.awaitingDecision, "| per-chain:", JSON.stringify({ "4217": data.totalsByChain["4217"].awaitingDecision, "8453": data.totalsByChain["8453"].awaitingDecision }));
+console.log("latestTasks:", data.latestTasks.length, "item; pertama:", JSON.stringify(data.latestTasks[0]));
+console.log("daily all terakhir:", JSON.stringify(data.daily.filter((d) => d.chain === "all").slice(-1)[0]));
+console.log("\n== R3c: rightNow / concentration ==");
+console.log("rightNow:", JSON.stringify(data.rightNow));
+console.log("concentration:", JSON.stringify(data.concentration));
+console.log("\n== R3d: openTasksList (hero swarm memakai rightNow di atas) ==");
+console.log("openTasksList:", data.openTasksList.length, "item; pertama:", JSON.stringify(data.openTasksList[0]));
+console.log("hero line 1: " + data.rightNow.openEntries.toLocaleString("en-US") + " entries circling " + data.rightNow.openTasks + " open tasks");
+console.log("hero line 2: $" + (data.rightNow.paidToday ?? "—") + " paid today · " + data.rightNow.closing24h + " closing in 24 hours");
 console.log(`\nwaktu total: ${((Date.now() - t0) / 1000).toFixed(1)} dtk`);
 if (fails > 0) process.exit(1);

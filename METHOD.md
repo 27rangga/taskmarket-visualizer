@@ -67,13 +67,22 @@ Waktu pembaruan terakhir ditampilkan sebagai "data as of" di atas halaman.
   berpartisipasi hari itu di `/api/tasks`: pembuat tugas (`requester`) +
   pemenang (`primaryAward.workerAddress`) + pengklaim (`claimedBy`). Angka
   headline 7-hari di atas tetap diambil langsung dari `/api/market/stats`.
+- **New agents / Settlements (harian, "all"):** `newAgents` dan
+  `settlements` resmi dari `platform-time-series` — keduanya hitungan,
+  bukan uang. **Per chain: tidak tersedia** (endpoint resmi platform-wide
+  dan tidak memisah per chain; baris per-chain berisi null, bukan nol,
+  supaya tidak menyesatkan). Kalau tab chain dipilih dan metrik ini aktif,
+  grafik menampilkan deret platform-wide dengan label eksplisit
+  “Platform-wide (all chains)” — bukan nol-nol dan bukan angka per-chain
+  karangan.
 - **Tasks by mode / by status ("all"):** dari `breakdowns` resmi. **Per chain:**
   hitungan tugas dari `/api/tasks` (jendela 5 Jul 2026–; mode yang teramati:
   bounty, claim, pitch, benchmark, auction; status: open, completed, claimed,
   cancelled, expired, pending_approval, worker_selected).
 - **Heatmap ("all"):** jumlah *event aktivitas* per jam UTC dari
   `activity-heatmap` resmi — event mencakup tugas dibuat, submission,
-  settlement, dan rating (total semua waktu 54.726 event vs 1.518 tugas), jadi
+  settlement, dan rating (total semua waktu 57.161 event vs 1.902 tugas —
+  per 26 Nov 2026 ~06:05 UTC; dulu 54.726 vs 1.518 pada 25 Nov), jadi
   satu sel bisa jauh lebih besar dari jumlah tugas. Baris resmi 0=Minggu
   dipetakan ke baris 0=Senin di halaman ini. **Per chain:** jumlah tugas yang
   dibuat per jam UTC dari `/api/tasks` (endpoint resmi tidak memisah per chain).
@@ -87,10 +96,47 @@ Waktu pembaruan terakhir ditampilkan sebagai "data as of" di atas halaman.
 - **Top winners:** 10 alamat `primaryAward.workerAddress` terbanyak dari tugas
   `completed`; total yang dimenangkan adalah jumlah `netReward` tugas-tugas itu.
   Panel "Top winners" di halaman menampilkan 5 teratas.
-- **What stands out:** empat rasio yang dihitung dari angka-angka di atas, untuk
-  chain yang dipilih (atau semua chain): porsi tugas yang completed, porsi uang
-  yang sudah dibayarkan dari yang dijanjikan, porsi tugas bounty, dan hari
-  tersibuk (tugas terbanyak dalam satu hari).
+- **What stands out:** delapan butir yang dihitung dari angka-angka di atas,
+  untuk chain yang dipilih (atau semua chain): porsi tugas yang completed,
+  porsi uang yang sudah dibayarkan dari yang dijanjikan, porsi tugas bounty,
+  hari tersibuk (tugas terbanyak dalam satu hari), pembagian nasib tugas
+  (porsi completed · cancelled · expired dari semua tugas dalam scope),
+  jumlah tugas open yang sudah lewat expiry dan menunggu keputusan, jam
+  tersibuk (aktivitas terbanyak dalam satu jam — event aktivitas untuk
+  “all chains”, tugas dibuat per chain), dan konsentrasi poster (porsi tugas
+  30 hari terakhir dari poster terbesar, dan berapa wallet yang memposting
+  setengah dari semuanya).
+- **Right now:** pasar yang sedang hidup, selalu platform-wide: tugas open
+  yang sedang menerima submission (`/api/market/stats` `openTasks` — status
+  open dan jendela submission terbuka), jumlah submission di atasnya (jumlah
+  `submissionCount` atas tugas open yang jendela submission-nya masih
+  terbuka, `submissionWindowOpen=true` di `/api/tasks` — tugas open yang
+  sudah lewat expiry tidak dihitung, karena tidak lagi menerima submission),
+  tugas yang dibuat hari ini dan uang yang dibayar hari ini (hari UTC saat
+  ini; uang hari ini adalah `paidVolume` dari bucket `platform-time-series`
+  hari ini), tugas open yang tutup dalam 24 jam (`expiryTime` dalam sehari),
+  dan uang pada tugas yang sudah lewat deadline tapi belum diputuskan
+  (jumlah `netReward` tugas open yang sudah lewat expiry). Diperbarui tiap jam.
+- **Awaiting decision:** jumlah tugas berstatus `open` yang `expiryTime`-nya
+  sudah lewat waktu data terakhir (`dataAsOf`) — tugas yang jendela
+  submission-nya tutup tapi belum diputuskan. Dihitung dari `/api/tasks`,
+  untuk semua chain dan per chain (jendela 5 Jul 2026–).
+- **Latest tasks:** 10 tugas terbaru menurut `createdAt` dari `/api/tasks`
+  — kode, judul, mode, status, chain, reward, dan jumlah submission.
+- **Open tasks taking entries:** 25 tugas open terbaru yang jendela
+  submission-nya masih terbuka — status `open` DAN `submissionWindowOpen=true`
+  di `/api/tasks`, urut `createdAt` terbaru dulu; tiap baris membawa kode,
+  judul, mode, status, chain, reward, dan jumlah submission. Tugas open yang
+  sudah lewat expiry tidak tampil, karena tidak lagi menerima entri. Jumlah
+  total tugas open yang sedang menerima submission ada di "Right now"
+  (`rightNow.openTasks`, dari `/api/market/stats`); daftar ini menampilkan
+  25 teratas dari jumlah itu.
+- **Hero (live swarm):** kalimat di bawah judul dihitung dari panel "Right
+  now" pada `dataAsOf` yang sama — "*N* entries circling *M* open tasks"
+  memakai `rightNow.openEntries` dan `rightNow.openTasks`; baris kedua memakai
+  `rightNow.paidToday` (uang dibayar hari ini, UTC) dan `rightNow.closing24h`
+  (tugas open yang tutup dalam 24 jam). Bukan teks statis — berubah tiap
+  refresh data.
 
 ## Mata uang
 
@@ -110,8 +156,8 @@ Waktu pembaruan terakhir ditampilkan sebagai "data as of" di atas halaman.
    `?chainId=8453`, dan tanpa chain identik persis). Karena itu angka per-chain
    dihitung dari daftar tugas (`/api/tasks`), bukan dari endpoint resmi.
 2. Daftar tugas (`/api/tasks`) hanya mengembalikan tugas sejak **5 Jul 2026**
-   (1.518 tugas), sedangkan angka resmi mencakup sejak tugas pertama
-   **4 Jun 2026** (1.663 tugas saat verifikasi 25 Nov 2026; bucket deret
+   (1.755 tugas), sedangkan angka resmi mencakup sejak tugas pertama
+   **4 Jun 2026** (1.902 tugas saat verifikasi 26 Nov 2026; bucket deret
    dimulai 26 Feb 2026, dengan nol sebelum 4 Jun). Jadi angka per-chain,
    poster mingguan, dan top winners mencakup jendela 5 Jul 2026–, sedangkan
    angka "all" resmi mencakup semua waktu. Jumlah per-chain tidak sama persis
@@ -122,6 +168,12 @@ Waktu pembaruan terakhir ditampilkan sebagai "data as of" di atas halaman.
 4. Data hanya mencakup tugas yang masih dikembalikan API. Tugas yang sudah
    dihapus dari API tidak masuk hitungan.
 5. Semua tanggal dan jam memakai **UTC**.
+6. **Median time-to-decision tidak ditampilkan**, karena API tidak membawa
+   stempel waktu penyelesaian tugas: tugas `completed` di `/api/tasks` tidak
+   punya `completedAt`/`resolvedAt` (hanya `primaryAward` berisi alamat
+   pemenang dan rating). Sebagai gantinya halaman menampilkan jumlah tugas
+   open yang sudah lewat expiry dan menunggu keputusan ("awaiting decision",
+   lihat definisi di atas).
 
 ---
 
@@ -135,15 +187,16 @@ Waktu pembaruan terakhir ditampilkan sebagai "data as of" di atas halaman.
 - Endpoint resmi mengabaikan `chainId` (breakdowns, time-series, heatmap —
   terverifikasi identik untuk 4217/8453/tanpa chain). Angka per-chain tetap
   dari `/api/tasks`.
-- `/api/tasks` hanya mengembalikan tugas sejak 2026-07-05 (walk penuh 1.518
-  tugas vs breakdowns 1.663) — per-chain = jendela 5 Jul 2026–. Tugas
+- `/api/tasks` hanya mengembalikan tugas sejak 2026-07-05 (walk penuh 1.755
+  tugas vs breakdowns 1.902 — per 26 Nov 2026; dulu 1.518 vs 1.663 pada
+  25 Nov) — per-chain = jendela 5 Jul 2026–. Tugas
   pertama di API 4 Jun 2026 (dari time-series); bucket deret dimulai
   26 Feb 2026 dengan nol sebelum 4 Jun.
 - Heatmap resmi: baris 0=Minggu (konvensi JS getDay; dibuktikan lewat
   pencocokan sel tersibuk feed 7 hari dengan sel tersibuk heatmap resmi,
   korelasi 0,507 vs 0,170 untuk konvensi 0=Senin). Dipetakan ke 0=Senin di
   `aggregate.js` (`(r + 6) % 7`). Heatmap resmi menghitung event
-  (range=all: 54.726 event), bukan tugas.
+  (range=all: 57.161 event per 26 Nov 2026; dulu 54.726 pada 25 Nov), bukan tugas.
 - `activity-feed`: limit maksimum 50 (limit=100 → HTTP 400). Dipakai limit=20.
 - Rate limit API: "Too many requests; retry after 2 seconds" — pipeline memberi
   jeda ≥300 ms antar halaman/panggilan dan backoff saat 429 (tunggu Retry-After
@@ -153,6 +206,10 @@ Waktu pembaruan terakhir ditampilkan sebagai "data as of" di atas halaman.
   bila index `tasks:index` sudah ada; backfill penuh hanya saat index kosong.
   Refresh feed: cron `*/15 * * * *` — `activity-feed` resmi saja, diperkaya
   dari `tasks:index`.
+- R3 (26 Nov 2026): `compactTask` menyimpan `expiryTime` (untuk hitungan
+  awaitingDecision). Bila index lama di KV berisi entri tanpa `expiryTime`,
+  refresh penuh berikutnya memaksa backfill penuh sekali (`knownIds=null`)
+  supaya hitungan lengkap; refresh sesudahnya kembali inkremental.
 - KV: `data:latest` (JSON lengkap), `data:meta` (lastFullRefresh,
   lastFeedRefresh, taskCount, pagesFetched, breakdownsTotal,
   timeSeriesBuckets, heatmapEvents, feedItems, errors), `tasks:index`

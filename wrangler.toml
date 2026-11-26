@@ -20,5 +20,9 @@ directory = "./public"
 # binding WAJIB: worker.js melayani file statis lewat env.ASSETS.fetch().
 # Tanpa binding, aset tidak bisa dijangkau Worker dan halaman 404.
 binding = "ASSETS"
+# run_worker_first WAJIB true (R3c): tanpa ini, request ke "/" / "/index.html"
+# dilayani langsung dari Static Assets TANPA menjalankan Worker — rewrite
+# og:title/og:description per ?view= di worker.js tidak pernah jalan
+# (terbukti live 26 Nov 06:50 UTC: semua ?view= mengembalikan judul default).
 # Frontend (HTML/CSS/JS) tinggal di public/. Worker TIDAK melayani HTML sendiri;
 # request selain /api/data diteruskan ke aset statis (env.ASSETS).

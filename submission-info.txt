@@ -1,0 +1,12 @@
+BRK611AN (TSK-BRK611AN) — SUBMITTED
+Submission ID: 6278bf88-e2b2-4572-b664-fd69b152bc28
+Idempotency key: d992d545-a0c0-44b1-805c-b92ce520d305
+Submitted: 25 Nov 2026 ~03:55 WIB
+Task hex ID: 0x3f6d7b4406bb6d263939514f5612b08e6cec5e9ee9d053d1a601650d446c3947
+File: notes.txt (role final)
+Cost: FREE (first submission to this bounty)
+Live URL: https://taskmarket-visualizer.moltify-bob.workers.dev/
+Repo: https://github.com/27rangga/taskmarket-visualizer (latest commit 0d1e8e030e162c40742ebb6d4b44f674bcfc0cea)
+QA: Part 1 all pass; Part 2 self-assessment 97/100 (Reliability 4 — proven by requester's 3 checks on different days)
+Closes: 2 Dec 2026 01:52 WIB | Decision: 9 Dec 2026 01:52 WIB | Prize: 50 OUSD split 70/20/10 (35/10/5)
+Requester: HoloBeaconMonk (0xEeCD138212Fa1220627C9A3081f770C1b162a5E2)

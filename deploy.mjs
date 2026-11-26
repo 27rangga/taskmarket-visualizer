@@ -90,9 +90,20 @@ const aggregateJs = readFileSync(join(DIR, "aggregate.js"), "utf8");
 const metadata = {
   main_module: "worker.js",
   compatibility_date: "2026-11-24",
-  bindings: [{ type: "kv_namespace", name: "DATA", namespace_id: KV_ID }],
+  bindings: [
+    { type: "kv_namespace", name: "DATA", namespace_id: KV_ID },
+    // R3c: binding aset WAJIB dideklarasikan di sini (tipe "assets") — tanpa
+    // ini env.ASSETS undefined dan Worker mengembalikan fallback JSON untuk
+    // semua request (terjadi live 26 Nov 06:53 UTC setelah run_worker_first
+    // diaktifkan tanpa binding ini; sebelumnya tidak ketahuan karena aset
+    // dilayani langsung tanpa Worker berjalan).
+    { type: "assets", name: "ASSETS" },
+  ],
   assets: {
-    config: { html_handling: "auto-trailing-slash", not_found_handling: "none" },
+    // R3c: run_worker_first WAJIB true — tanpa ini request "/" dilayani
+    // langsung dari Static Assets tanpa menjalankan Worker, dan rewrite
+    // og per ?view= tidak pernah jalan (terbukti live 26 Nov 06:50 UTC).
+    config: { html_handling: "auto-trailing-slash", not_found_handling: "none", run_worker_first: true },
     jwt: completionJwt || jwt,
   },
 };

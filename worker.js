@@ -26,6 +26,40 @@ const MAX_RETRIES = 5;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * Meta per view untuk share card (og:title / og:description). Crawler membaca
+ * HTML awal dan tidak menjalankan JS, jadi Worker menulis ulang <title> +
+ * og meta saat URL membawa ?view=. Gambar og tetap satu (brand kit).
+ */
+const VIEW_META = {
+  flow:     { title: "Money flow — TaskMarket Visualizer", desc: "From poster to escrow to winner: how a task's reward moves on TaskMarket." },
+  daily:    { title: "Daily activity — TaskMarket Visualizer", desc: "Tasks posted, entries and money paid each day on TaskMarket, all chains or one." },
+  heatmap:  { title: "When the market moves — TaskMarket Visualizer", desc: "The busiest hour of the week on TaskMarket, by day and hour (UTC)." },
+  feed:     { title: "Latest activity — TaskMarket Visualizer", desc: "The latest TaskMarket events and tasks, live." },
+  posters:  { title: "Top posters — TaskMarket Visualizer", desc: "Who posts the most work on TaskMarket this week." },
+  rightnow: { title: "Right now — TaskMarket Visualizer", desc: "Open tasks taking entries, money paid today, and what is past deadline — the live market, right now." },
+};
+
+/** Tulis ulang <title> + og:title/og:description untuk share link ?view=. */
+async function serveWithViewMeta(request, env) {
+  const url = new URL(request.url);
+  const meta = VIEW_META[url.searchParams.get("view")];
+  const res = await env.ASSETS.fetch(request);
+  const ctype = res.headers.get("content-type") || "";
+  if (!meta || !ctype.includes("text/html")) return res;
+  let html = await res.text();
+  html = html.replace(/<title>[^<]*<\/title>/, `<title>${meta.title}</title>`);
+  html = html.replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${meta.title}$2`);
+  html = html.replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${meta.desc}$2`);
+  const headers = new Headers(res.headers);
+  headers.delete("content-length");
+  // Jangan cache HTML hasil rewrite: cache edge memakai kunci yang
+  // mengabaikan query string, jadi /?view=flow bisa dilayani dari cache
+  // "/" (judul default). no-store memaksa Worker jalan tiap request view.
+  headers.set("cache-control", "no-store");
+  return new Response(html, { status: res.status, headers });
+}
+
 /** Fetch JSON dengan backoff saat 429 (pakai Retry-After bila ada, else 2 dtk). */
 async function fetchJsonWithRetry(url, attempt = 0) {
   const res = await fetch(url, { headers: { accept: "application/json" } });
@@ -128,6 +162,26 @@ async function fullRefresh(env) {
     errors.push(`baca tasks:index gagal: ${e.message}`);
   }
 
+  // 1b. Backfill paksa sekali bila index lama berisi entri TANPA expiryTime
+  // (format compactTask sebelum R3): tanpa expiryTime, hitungan
+  // awaitingDecision tidak lengkap. Paksa paging penuh (knownIds=null);
+  // refresh berikutnya sudah memakai index baru dan kembali inkremental.
+  let forcedBackfillNoExpiry = false;
+  if (knownTasks.length && knownTasks.some((t) => !t.expiryTime)) {
+    knownIds = null;
+    forcedBackfillNoExpiry = true;
+  }
+
+  // 1c. Backfill paksa sekali bila index lama berisi entri TANPA
+  // submissionWindowOpen (format compactTask sebelum R3c): tanpa field itu,
+  // hitungan "entries on open tasks" tidak bisa membedakan tugas yang
+  // jendela submission-nya masih terbuka dari yang sudah menunggu keputusan.
+  let forcedBackfillNoSubmissionWindow = false;
+  if (knownTasks.length && knownTasks.some((t) => t.submissionWindowOpen === undefined)) {
+    knownIds = null;
+    forcedBackfillNoSubmissionWindow = true;
+  }
+
   // 2. Stats + endpoint resmi + task baru (paging penuh hanya bila index kosong).
   let stats;
   try {
@@ -177,6 +231,8 @@ async function fullRefresh(env) {
       taskCount: allTasks.length,
       pagesFetched,
       backfill: isBackfill,
+      forcedBackfillNoExpiry,
+      forcedBackfillNoSubmissionWindow,
       breakdownsTotal: official.breakdowns
         ? (official.breakdowns.status || []).reduce((a, s) => a + (Number(s.count) || 0), 0)
         : null,
@@ -245,6 +301,12 @@ export default {
           "cache-control": "public, max-age=300",
         },
       });
+    }
+
+    // Share card per view: ?view=... -> og title/description per view
+    // (crawler membaca HTML awal; hash #/view tidak terbaca crawler).
+    if (env.ASSETS && (url.pathname === "/" || url.pathname === "/index.html") && url.searchParams.has("view")) {
+      return serveWithViewMeta(request, env);
     }
 
     // Aset statis (frontend di public/ via Workers Static Assets).
